@@ -79,7 +79,8 @@ class Document extends Model
         'disable_comment' => 'nullable',
         'save_type' => 'required|integer',
         'created_at' => 'nullable',
-        'updated_at' => 'nullable'
+        'updated_at' => 'nullable',
+        'files' => 'array|nullable'
     ];
 
 

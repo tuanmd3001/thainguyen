@@ -78,13 +78,16 @@ class DocumentController extends AppBaseController
         }
 
         if (isset($input['files']) && count($input['files'])){
-            Attachment::where("temp_id", $input['temp_id'])->whereIn('store_name', $input['files'])->update([
-                'document_id' => $document->id,
-                'temp_id' => null,
-                'is_draft' => 0
-            ]);
-            Attachment::where('temp_id', $input['temp_id'])->delte();
+            foreach ($input['files'] as $upload_file){
+                $file_info = json_decode($upload_file);
+                Attachment::where("temp_id", $input['temp_id'])->where('id', $file_info->id)->update([
+                    'document_id' => $document->id,
+                    'temp_id' => null,
+                    'is_draft' => 0
+                ]);
+            }
         }
+        Attachment::where('temp_id', $input['temp_id'])->delete();
 
         Flash::success('Document saved successfully.');
 
@@ -127,8 +130,10 @@ class DocumentController extends AppBaseController
 
             return redirect(route('admin.documents.index'));
         }
+        $temp_id = "temp_" . Uuid::uuid4();
         $tags = Tag::all();
-        return view('admin.documents.edit', compact('document', 'tags'));
+        $document_files = Attachment::where("document_id", $id)->get();
+        return view('admin.documents.edit', compact('document', 'temp_id', 'tags', 'document_files'));
     }
 
     /**
@@ -142,14 +147,51 @@ class DocumentController extends AppBaseController
     public function update($id, UpdateDocumentRequest $request)
     {
         $document = $this->documentRepository->find($id);
-
         if (empty($document)) {
             Flash::error('Document not found');
 
             return redirect(route('admin.documents.index'));
         }
+        $input = $request->all();
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->storeAs(
+                'thumbnails', Uuid::uuid4() . '.' . $request->file('thumbnail')->getClientOriginalExtension(),
+                ['disk' => 'public']
+            );
+            $input['thumbnail'] = $path;
+        }
+        elseif (!isset($input['old_thumbnail'])){
+            $input['thumbnail'] = null;
+        }
 
-        $document = $this->documentRepository->update($request->all(), $id);
+        $input['disable_comment'] = (isset($input['disable_comment']) && $input['disable_comment']) == 1 ? 1 : 0;
+        $input['draft'] = $input['save_type'] == Document::SAVE_TYPE_DRAFT ? 1 : 0;
+
+        $document = $this->documentRepository->update($input, $id);
+
+        if (isset($input['tags']) && count($input['tags'])){
+            $document->syncTags([]);
+            foreach ($input['tags'] as $tag){
+                $document->attachTag(Tag::findOrCreate($tag));
+            }
+        }
+
+        $keep_file = [];
+        if (isset($input['files']) && count($input['files'])){
+            foreach ($input['files'] as $upload_file){
+                $file_info = json_decode($upload_file);
+                if (property_exists($file_info, "id")){
+                    Attachment::where("temp_id", $input['temp_id'])->where('id', $file_info->id)->update([
+                        'document_id' => $document->id,
+                        'temp_id' => null,
+                        'is_draft' => 0
+                    ]);
+                    $keep_file[] = $file_info->id;
+                }
+            }
+        }
+        Attachment::where('temp_id', $input['temp_id'])->delete();
+        Attachment::where('document_id', $document->id)->whereNotIn("id", $keep_file)->delete();
 
         Flash::success('Document updated successfully.');
 

@@ -41,6 +41,7 @@ class APIController extends AppBaseController
             "file_name" => $file->getClientOriginalName(),
             "store_name" => $store_name,
             "file_path" => $path,
+            "size" => $file->getSize(),
             "extension" => $file->getClientOriginalExtension(),
             "document_id" => $request->has('document_id') ? $request['document_id'] : null,
             "temp_id" => $request->has('temp_id') ? $request['temp_id'] : null,
@@ -50,7 +51,7 @@ class APIController extends AppBaseController
 
         return response()->json([
             "success" => true,
-            "file_name" => $attachment->store_name,
+            "id" => $attachment->id,
             "message" => "File successfully uploaded"
         ]);
     }

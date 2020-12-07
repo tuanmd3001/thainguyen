@@ -9,7 +9,7 @@
     <div class="content">
         {{--        @include('adminlte-templates::common.errors')--}}
         <div class="row">
-            {!! Form::open(['route' => 'admin.documents.store', "enctype" => "multipart/form-data"]) !!}
+            {!! Form::model($document, ['route' => ['admin.documents.update', $document->id], "enctype" => "multipart/form-data", 'method' => 'patch']) !!}
 
             @include('admin.documents.fields')
 

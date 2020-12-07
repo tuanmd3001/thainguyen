@@ -155,6 +155,7 @@
                 {!! Form::label('thumbnail', 'Ảnh đại diện cho tài liệu:') !!}
                 <div class="upload-thumbnail @if(isset($document) && !empty($document->thumbnail)) ready @endif">
                     <input id="thumbnail" type="file" name="thumbnail" accept="image/*" data-role="none" hidden="">
+                    <input id="old_thumbnail" type="hidden" name="old_thumbnail" value="1">
                     <div>
                         <div class="thumbnail-msg">Click để chọn ảnh</div>
                         <div id="thumbnail-display">
@@ -265,7 +266,51 @@
 
             maxFilesize: 5,
             createImageThumbnails:false,
-            acceptedFiles:'.mp3, .mp4, .png, .jpg, .gif, .doc, .docx, .pdf, .xls, .xlsx, .ppt, .pptx, .html, .htm, .xlm, .rtf'
+            acceptedFiles:'.mp3, .mp4, .png, .jpg, .gif, .doc, .docx, .pdf, .xls, .xlsx, .ppt, .pptx, .html, .htm, .xlm, .rtf',
+            init: function (){
+                @if(old('files'))
+                @foreach(old('files') as $uploaded_file)
+                @php $file_info = json_decode($uploaded_file) @endphp
+                var mockFile = {
+                    name: "{{$file_info->filename}}",
+                    id: "{{$file_info->id}}",
+                    size: "{{$file_info->total}}",
+                    accepted: true,
+                    upload: {!! $uploaded_file !!}
+                }
+                this.files.push(mockFile);
+                this.emit("addedfile", mockFile);
+                this.emit("complete", mockFile);
+                this.emit("success", mockFile);
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'files[]',
+                    value: JSON.stringify(mockFile),
+                    'data-uuid': mockFile.upload.uuid
+                }).appendTo('#uploaded_file');
+                @endforeach
+                @elseif(isset($document) && isset($document_files))
+                @foreach($document_files as $uploaded_file)
+                var mockFile = {
+                    name: "{{$uploaded_file->file_name}}",
+                    id: "{{$uploaded_file->id}}",
+                    size: "{{$uploaded_file->size}}",
+                    accepted: true,
+                    upload: {uuid: uuidv4()}
+                }
+                this.files.push(mockFile);
+                this.emit("addedfile", mockFile);
+                this.emit("complete", mockFile);
+                this.emit("success", mockFile);
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'files[]',
+                    value: JSON.stringify(mockFile),
+                    'data-uuid': mockFile.upload.uuid
+                }).appendTo('#uploaded_file');
+                @endforeach
+                @endif
+            }
         });
 
         myDropzone.on("addedfile", function(file) {
@@ -275,6 +320,7 @@
 
         myDropzone.on("removedfile", function(file) {
             // Hookup the start button
+            console.log(file)
             $('#uploaded_file').find('input[data-uuid="' + file.upload.uuid + '"]').remove();
         });
 
@@ -290,15 +336,10 @@
             file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
 
             formData.append("user_id", {{ \Illuminate\Support\Facades\Auth::guard('admins')->user()->id }});
-            @if(isset($document))
-            formData.append("document_id", {{ $document->id }});
-            @else
             formData.append("temp_id", "{{ old('temp_id') ?? $temp_id }}");
-            @endif
         });
 
         myDropzone.on('error', function(file, response) {
-            console.log(response)
             let error_msg = "Có lỗi xảy ra. Vui lòng thử lại";
             if (typeof response == "string"){
                 if (response === "You can't upload files of this type."){
@@ -318,13 +359,13 @@
         });
 
         myDropzone.on('success', function(file, response) {
-            console.log(response.hasOwnProperty('success') && response.success === true)
+            console.log(file)
             let error_msg = "Có lỗi xảy ra. Vui lòng thử lại";
-            if (response.hasOwnProperty('success') && response.success === true && response.hasOwnProperty('file_name')){
+            if (response.hasOwnProperty('success') && response.success === true && response.hasOwnProperty('id')){
                 $('<input>').attr({
                     type: 'hidden',
                     name: 'files[]',
-                    value: response.file_name,
+                    value: JSON.stringify({...file.upload, id: response.id}),
                     'data-uuid': file.upload.uuid
                 }).appendTo('#uploaded_file');
                 return;
@@ -352,6 +393,12 @@
                 $('#uploaded_file').empty();
             }
         };
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
     </script>
     <script src="https://cdn.ckeditor.com/ckeditor5/23.1.0/classic/ckeditor.js"></script>
     <script>
@@ -385,6 +432,8 @@
             $('#reset').attr('hidden');
             $('.upload-thumbnail').removeClass('ready result');
             $('#thumbnail_preview_container').attr('src', '#');
+            $('#thumbnail').val("");
+            $('#old_thumbnail').remove();
         });
 
         function readFile(input) {
@@ -400,10 +449,13 @@
             readFile(this);
         });
 
-        $('form').onsubmit(function (){
-            if (myDropzone){
-
+        $('form').submit(function (){
+            console.log()
+            if (myDropzone.getFilesWithStatus(Dropzone.ADDED).length > 0 || myDropzone.getFilesWithStatus(Dropzone.PROCESSING).length > 0){
+                alert("Vui lòng hoàn thành tải file trước khi lưu")
+                return false;
             }
+            return true;
         })
 
     </script>
