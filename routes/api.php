@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 //Route::group(['middleware' => 'auth:api'], function () {
 //    Route::post('upload', 'APIController@uploadFile')->name('upload');
 //});
 Route::post('upload', 'APIController@uploadFile')->name('upload');
+
+Route::group(['middleware' => ['auth:api']], function (){
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::get("/search", 'APIController@search')->name('search');
+});

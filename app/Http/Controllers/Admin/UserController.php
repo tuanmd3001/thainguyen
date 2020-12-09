@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Repositories\UserRepository;
@@ -63,6 +64,7 @@ class UserController extends AppBaseController
     {
         $input = $request->all();
         $input['password'] = Hash::make(Constants::DEFAULT_PASSWORD);
+        $input['api_token'] = Str::random(60);
 
         $user = $this->userRepository->create($input);
 

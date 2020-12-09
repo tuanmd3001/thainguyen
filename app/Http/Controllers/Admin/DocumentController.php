@@ -69,6 +69,7 @@ class DocumentController extends AppBaseController
 
         $input['disable_comment'] = (isset($input['disable_comment']) && $input['disable_comment']) == 1 ? 1 : 0;
         $input['draft'] = $input['save_type'] == Document::SAVE_TYPE_DRAFT ? 1 : 0;
+        $input['description_text'] = strip_tags($input['description']);
         $document = $this->documentRepository->create($input);
 
         if (isset($input['tags']) && count($input['tags'])){
@@ -166,6 +167,7 @@ class DocumentController extends AppBaseController
 
         $input['disable_comment'] = (isset($input['disable_comment']) && $input['disable_comment']) == 1 ? 1 : 0;
         $input['draft'] = $input['save_type'] == Document::SAVE_TYPE_DRAFT ? 1 : 0;
+        $input['description_text'] = strip_tags($input['description']);
 
         $document = $this->documentRepository->update($input, $id);
 

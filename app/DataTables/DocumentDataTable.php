@@ -20,7 +20,8 @@ class DocumentDataTable extends DataTable
 
         return $dataTable
             ->addIndexColumn()
-            ->addColumn('action', 'admin.documents.datatables_actions');
+            ->addColumn('action', 'admin.documents.datatables_actions')
+            ->rawColumns(['action', 'description']);
     }
 
     /**
@@ -98,11 +99,11 @@ class DocumentDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            'name',
-            'description',
-            'privacy',
-            'status',
-            'thumbnail'
+            ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => 'STT','searchable' => false, 'className' => 'text-center'],
+            ['data' => 'name', 'name' => 'name', 'title' => 'Tên'],
+            ['data' => 'description', 'name' => 'description', 'title' => 'Nội dung'],
+            ['data' => 'privacy', 'name' => 'privacy', 'title' => 'Cấp độ bảo mật', 'className' => 'text-center'],
+            ['data' => 'status_label', 'name' => 'status_label', 'title' => 'Trạng thái', 'className' => 'text-center'],
         ];
     }
 

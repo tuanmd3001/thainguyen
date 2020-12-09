@@ -42,6 +42,7 @@ class Document extends Model
     public $fillable = [
         'name',
         'description',
+        'description_text',
         'privacy',
         'status',
         'thumbnail',
@@ -58,6 +59,7 @@ class Document extends Model
         'id' => 'integer',
         'name' => 'string',
         'description' => 'string',
+        'description_text' => 'string',
         'privacy' => 'integer',
         'status' => 'integer',
         'thumbnail' => 'string',
@@ -83,5 +85,15 @@ class Document extends Model
         'files' => 'array|nullable'
     ];
 
+    protected $appends = [
+        'status_label'
+    ];
+
+    public function getStatusLabelAttribute(){
+        if (isset(self::STATUS_LABEL[$this->status])){
+            return self::STATUS_LABEL[$this->status];
+        }
+        return "";
+    }
 
 }

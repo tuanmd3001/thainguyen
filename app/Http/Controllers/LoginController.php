@@ -33,7 +33,7 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        if (Auth::guard('web')->user()){
+        if (Auth::guard('web')->user()) {
             return redirect(route('home'));
         }
         return view('auth.login');
@@ -66,10 +66,9 @@ class LoginController extends Controller
         ]);
 
         $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        if($this->guard()->attempt(array($fieldType => $input['username'], 'password' => $input['password'])))
-        {
+        if ($this->guard()->attempt(array($fieldType => $input['username'], 'password' => $input['password']))) {
             return redirect()->route('home');
-        }else{
+        } else {
             return redirect()->route('login')
                 ->withErrors(['error' => 'Thông tin đăng nhập không đúng.']);
         }
@@ -80,9 +79,9 @@ class LoginController extends Controller
     {
         $this->guard()->logout();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+//        $request->session()->invalidate();
+//
+//        $request->session()->regenerateToken();
 
         if ($response = $this->loggedOut($request)) {
             return $response;

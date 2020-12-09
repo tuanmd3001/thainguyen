@@ -22,16 +22,15 @@ App::setLocale('vi');
 
 
 
-Route::get('/', function (){
-    return view('welcome');
-});
-
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/', function (){
+//    return view('welcome');
+//});
 Route::get('/login', 'LoginController@showLoginForm')->name('login');
 Route::post('/login', 'LoginController@login');
 Route::post('/logout', 'LoginController@logout')->name('logout');
 
 Route::group(['middleware' => ['auth']], function (){
+    Route::get('/', 'HomeController@index')->name('home');
     Route::get('/change_password', 'UserController@change_password')->name('change_password');
     Route::post('/change_password', 'UserController@change_password');
 });
