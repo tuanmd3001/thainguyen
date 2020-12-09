@@ -36,7 +36,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="javascrip:void(0)">PHẦN MỀM QUẢN LÝ HOẠT ĐỘNG ĐỐI NGOẠI</a>
+        <a href="javascrip:void(0)">PHẦN MỀM QUẢN LÝ TÀI LIỆU SỐ</a>
     </div>
 
     <!-- /.login-logo -->
