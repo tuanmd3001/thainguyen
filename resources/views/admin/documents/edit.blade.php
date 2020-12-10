@@ -3,7 +3,7 @@
 @section('content')
     <section class="content-header">
         <h1>
-            Document
+            Cập nhật tài liệu số
         </h1>
    </section>
     <div class="content">

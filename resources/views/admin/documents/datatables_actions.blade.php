@@ -1,8 +1,8 @@
 {!! Form::open(['route' => ['admin.documents.destroy', $id], 'method' => 'delete']) !!}
 <div class='btn-group'>
-    <a href="{{ route('admin.documents.show', $id) }}" class='btn btn-default btn-xs'>
-        <i class="glyphicon glyphicon-eye-open"></i>
-    </a>
+{{--    <a href="{{ route('admin.documents.show', $id) }}" class='btn btn-default btn-xs'>--}}
+{{--        <i class="glyphicon glyphicon-eye-open"></i>--}}
+{{--    </a>--}}
     <a href="{{ route('admin.documents.edit', $id) }}" class='btn btn-default btn-xs'>
         <i class="glyphicon glyphicon-edit"></i>
     </a>
