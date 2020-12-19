@@ -22,6 +22,7 @@
         "spatie/laravel-activitylog": "^3.16",
         "spatie/laravel-permission": "^3.17",
         "spatie/laravel-tags": "^2.7.2",
+        "spatie/pdf-to-text": "^1.4",
         "thiagoalessio/tesseract_ocr": "^2.9",
         "yajra/laravel-datatables": "^1.5"
     },
