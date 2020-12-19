@@ -4,9 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\Admin\Attachment;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
-class ParseAttachment extends Command
+class ParseImage extends Command
 {
     /**
      * The name and signature of the console command.
