@@ -76,11 +76,12 @@ class ParseImage extends Command
         $process_lock = uniqid();
         try {
             $query = sprintf("
-                update attachments set process_lock = '%s'
-                where parsed = %s
-                and extension in ('%s')
-                and (process_lock = '' or process_lock is null) and retry_count < %s
-                order by updated_at asc limit 1",
+                update attachments set attachments.process_lock = '%s'
+                where attachments.parsed = %s
+                and attachments.extension in ('%s')
+                and (attachments.process_lock = '' or attachments.process_lock is null)
+                and attachments.retry_count < %s
+                order by attachments.updated_at asc limit 1",
                 $process_lock,
                 0,
                 implode('\',\'', ['png', 'jpeg', 'gif']),
