@@ -16243,3 +16243,10 @@ a:hover {
 #documents-container {
     padding-top: 20px;
 }
+
+.form-check label {
+    font-weight: normal;
+}
+.select2-container {
+    width: 100% !important;
+}

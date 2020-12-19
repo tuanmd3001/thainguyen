@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\AppBaseController;
 use App\Models\Admin\Attachment;
+use App\Models\Admin\Comment;
 use App\Models\Admin\Document;
 use App\Models\Constants;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class APIController extends AppBaseController
             "store_name" => $store_name,
             "file_path" => $path,
             "size" => $file->getSize(),
-            "extension" => $file->getClientOriginalExtension(),
+            "extension" => strtolower($file->getClientOriginalExtension()),
             "document_id" => $request->has('document_id') ? $request['document_id'] : null,
             "temp_id" => $request->has('temp_id') ? $request['temp_id'] : null,
             "upload_by" => $request['user_id']
@@ -72,9 +73,39 @@ class APIController extends AppBaseController
             }
         }
         else {
-            if (isset($filters['txtSearch'])){
-                $itemsPaginated = $this->searchByText(trim($filters['txtSearch']));
+            $itemsPaginated = Document::where('draft', Document::SAVE_TYPE_PUBLIC)
+                ->where('status', Document::STATUS_EXPLOIT);
+            if (isset($filters['txtSearch']) && trim($filters['txtSearch']) != ""){
+                $where = [];
+                if (isset($filters['searchTitle']) && $filters['searchTitle'] == 'on'){
+                    $where[] = 'name LIKE "%' . trim($filters['txtSearch']) . '%"';
+                }
+                if (isset($filters['searchDesc']) && $filters['searchDesc'] == 'on'){
+                    $where[] = 'description_text LIKE "%' . trim($filters['txtSearch']) . '%"';
+                }
+                if (isset($filters['searchFile']) && $filters['searchFile'] == 'on'){
+                    $idsByFiles = Attachment::where('content', 'LIKE', '%' . trim($filters['txtSearch']) . '%')
+                        ->pluck('document_id')->toArray();
+                    $where[] = 'id IN (' . ($idsByFiles ? implode(', ', $idsByFiles): 'NULL') . ')';
+                }
+                if (isset($filters['searchComment']) && $filters['searchComment'] == 'on'){
+                    $idsByComments = Comment::where('content', 'LIKE', '%' . trim($filters['txtSearch']) . '%')
+                        ->pluck('document_id')->toArray();
+                    $where[] = 'id IN (' . ($idsByComments ? implode(', ', $idsByComments) : 'NULL') . ')';
+                }
+                if (count($where)){
+                    $itemsPaginated = $itemsPaginated->whereRaw('( ' . implode(' OR ', $where) . ' )');
+                }
             }
+            if (isset($filters['start']) && trim($filters['start']) != ""){
+                $start = \DateTime::createFromFormat('d/m/Y', $filters['start']);
+                $itemsPaginated = $itemsPaginated->where('created_at', '>=', $start->format('Y-m-d').' 00:00:00');
+            }
+            if (isset($filters['end']) && trim($filters['end']) != ""){
+                $end = \DateTime::createFromFormat('d/m/Y', $filters['end']);
+                $itemsPaginated = $itemsPaginated->where('created_at', '<=', $end->format('Y-m-d').' 23:59:59');
+            }
+            $itemsPaginated = $itemsPaginated->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(self::PER_PAGE);
         }
 
         if (isset($filters['_'])){
@@ -93,39 +124,62 @@ class APIController extends AppBaseController
             ->paginate(self::PER_PAGE);
     }
 
-    private function searchByText($txt){
-        return Document::where('draft', Document::SAVE_TYPE_PUBLIC)
-            ->where('status', Document::STATUS_EXPLOIT)
-            ->where('name', 'LIKE', '%' . $txt . '%')
-            ->orderBy('created_at', 'desc')->orderBy('id', 'desc')
-            ->paginate(self::PER_PAGE);
-    }
-
     private function formatSearchResult($filters, $itemsPaginated)
     {
-        $itemsTransformed = $itemsPaginated
-            ->getCollection()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'description' => $item->description,
-                    'thumbnail' => !empty($item->thumbnail) ? url("storage/".$item->thumbnail) : url('assets/images/noimage.jpg'),
-                    'created_at' => date( 'd/m/Y', strtotime( $item->created_at )),
-                    'doc_url' => '#'
-                ];
-            })
-            ->toArray();
+        if ($itemsPaginated->count()){
+            $itemsTransformed = $itemsPaginated
+                ->getCollection()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'description' => $item->description,
+                        'thumbnail' => !empty($item->thumbnail) ? url("storage/".$item->thumbnail) : url('assets/images/noimage.jpg'),
+                        'created_at' => date( 'd/m/Y', strtotime( $item->created_at )),
+                        'doc_url' => route('view_document', $item->slug)
+                    ];
+                })
+                ->toArray();
 
-        return new LengthAwarePaginator(
-            $itemsTransformed,
-            $itemsPaginated->total(),
-            $itemsPaginated->perPage(),
-            $itemsPaginated->currentPage(), [
-                'path' => \Request::url(),
-                'query' => $filters
-            ]
-        );
+            return new class(
+                $itemsTransformed,
+                $itemsPaginated->total(),
+                $itemsPaginated->perPage(),
+                $itemsPaginated->currentPage(), [
+                    'path' => \Request::url(),
+                    'query' => $filters,
+                    'title' => isset($filters['type']) && $filters['type'] == 'newest' ? "Bài viết mới" : 'Kết quả tìm kiếm'
+                ]
+            ) extends LengthAwarePaginator {
+                public function toArray()
+                {
+                    $data = parent::toArray();
+                    // place whatever you want to send here
+                    $data['title'] = $this->title;
+                    return $data;
+                }
+            };
+        }
+        else {
+            return new class(
+                [],
+                1,
+                self::PER_PAGE,
+                1, [
+                    'path' => \Request::url(),
+                    'query' => $filters,
+                    'title' => isset($filters['type']) && $filters['type'] == 'newest' ? "Bài viết mới" : 'Kết quả tìm kiếm'
+                ]
+            ) extends LengthAwarePaginator {
+                public function toArray()
+                {
+                    $data = parent::toArray();
+                    // place whatever you want to send here
+                    $data['title'] = $this->title;
+                    return $data;
+                }
+            };
+        }
     }
 
 }

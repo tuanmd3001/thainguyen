@@ -32,7 +32,7 @@ class User extends Authenticatable
 
 
     public $fillable = [
-        'username', 'name', 'email', 'password',
+        'username', 'name', 'email', 'password', 'api_token'
     ];
 
     protected $hidden = [
@@ -51,7 +51,8 @@ class User extends Authenticatable
         'email' => 'string',
         'email_verified_at' => 'datetime',
         'password' => 'string',
-        'remember_token' => 'string'
+        'remember_token' => 'string',
+        'api_token' => 'string'
     ];
 
     /**

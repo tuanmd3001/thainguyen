@@ -20,32 +20,79 @@
                     </div>
                 </div>
             </div>
-{{--            <div class="row" style="margin-top: 15px">--}}
-{{--                <div class="col-xs-12">--}}
-{{--                    <div class="panel-group" id="accordion">--}}
-{{--                        <div class="">--}}
-{{--                            <div class="">--}}
-{{--                                <div class="">--}}
-{{--                                    <a data-toggle="collapse"--}}
-{{--                                       data-parent="#accordion"--}}
-{{--                                       href="#extra-search"--}}
-{{--                                       style="color: #367fa9">--}}
-{{--                                        Tìm kiếm nâng cao--}}
-{{--                                    </a>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                            <div id="extra-search" class="panel-collapse collapse">--}}
-{{--                                <div class="panel-body">--}}
-{{--                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,--}}
-{{--                                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad--}}
-{{--                                    minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea--}}
-{{--                                    commodo consequat.--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
+            <div class="row" style="margin-top: 15px">
+                <div class="col-xs-12">
+                    <div class="panel-group" id="accordion">
+                        <div class="">
+                            <div class="">
+                                <div class="">
+                                    <a data-toggle="collapse"
+                                       data-parent="#accordion"
+                                       href="#extra-search"
+                                       style="color: #367fa9">
+                                        Tìm kiếm nâng cao
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="extra-search" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="searchTitle" name="searchTitle" checked>
+                                                <label class="form-check-label" for="searchTitle">Tìm kiếm trong tiêu đề</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="searchDesc" name="searchDesc">
+                                                <label class="form-check-label" for="searchDesc">Tìm kiếm trong nội dung tài liệu</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="searchFile" name="searchFile">
+                                                <label class="form-check-label" for="searchFile">Tìm kiếm trong file đính kèm</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="searchComment" name="searchComment">
+                                                <label class="form-check-label" for="searchComment">Tìm kiếm trong nhận xét</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-12">
+                                            Thời gian:
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="input-daterange input-group" id="datepicker">
+                                                <span class="input-group-addon">Từ ngày</span>
+                                                <input type="text" class="input-sm form-control" name="start" />
+                                                <span class="input-group-addon">Đến ngày</span>
+                                                <input type="text" class="input-sm form-control" name="end" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class=" form-group col-md-12">
+                                            <div>Thẻ tag:</div>
+                                            <select id="tag_selector" class="form-control" name="tags[]" multiple="multiple">
+                                                @foreach($tags as $tag)
+                                                    <option value="{{$tag->getTranslation('name', 'vi')}}">{{$tag->getTranslation('name', 'vi')}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
     <div id="documents-container">
@@ -65,6 +112,17 @@
 
 @push('scripts')
     <script>
+        $('#tag_selector').select2({
+            tags: false
+        });
+        $('.input-daterange').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy',
+            language: 'vi',
+            weekStart: 1
+        });
+    </script>
+    <script>
         var next_page_url = null;
         searchDocument({
             type: 'newest'
@@ -77,8 +135,18 @@
             $(formdata).each(function(index, obj){
                 data[obj.name] = obj.value;
             });
-            searchDocument(data, true)
+            if (validateSearch(data)){
+                searchDocument(data, true)
+            }
         });
+
+        function validateSearch(data){
+            if (data['start'].trim() || data['end'].trim()){
+                return true;
+            }
+            return !!(data['txtSearch'].trim() && (data['searchTitle'] || data['searchDesc'] || data['searchFile'] || data['searchComment']));
+
+        }
 
         function searchDocument(filters, refresh = false) {
             $.ajax({
@@ -116,11 +184,18 @@
             if (refresh){
                 $('#documents-container').empty();
             }
+            if (data.hasOwnProperty('title')){
+                $('#documents-container').append('<h1 class="mb-5">' + data.title + '</h1>')
+            }
             if (data.hasOwnProperty('data') && data.data.length > 0){
                 for (let i in data.data){
                     $('#documents-container').append(documentHtml(data.data[i]))
                 }
             }
+            else {
+                $('#documents-container').append('<span>Không tìm thấy tài liệu</span>')
+            }
+
             $('#showMoreBtn').hide();
             if (data.hasOwnProperty("next_page_url")){
                 next_page_url = data.next_page_url;
@@ -134,7 +209,7 @@
                 '<div class="block h-post-card-image bg-cover bg-center bg-no-repeat w-full h-48" style="background-image: url(\''+ data.thumbnail +'\')"></div>\n' +
                 '<div class="flex flex-col justify-between flex-1">' +
                 '    <div>\n' +
-                '        <h2 class="font-sans leading-normal block">' + data.name + '</h2>\n' +
+                '        <h3 class="font-sans leading-normal block">' + data.name + '</h3>\n' +
                 // '        <div class="leading-normal mb-6 font-serif leading-loose">' + data.description + '</div>\n' +
                 '    </div>\n' +
                 '    <div class="flex items-center text-sm text-light">\n' +

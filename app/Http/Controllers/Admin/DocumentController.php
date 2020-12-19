@@ -11,6 +11,7 @@ use App\Models\Admin\Document;
 use App\Repositories\Admin\DocumentRepository;
 use Flash;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Uuid;
 use Response;
 use Spatie\Tags\Tag;
@@ -69,8 +70,14 @@ class DocumentController extends AppBaseController
 
         $input['disable_comment'] = (isset($input['disable_comment']) && $input['disable_comment']) == 1 ? 1 : 0;
         $input['draft'] = $input['save_type'] == Document::SAVE_TYPE_DRAFT ? 1 : 0;
-        $input['description_text'] = strip_tags($input['description']);
+        $input['description_text'] = preg_replace('/\s+/', ' ', strip_tags(str_replace('<', ' <', $input['description'])));
+        $input['slug'] = Uuid::uuid4();
         $document = $this->documentRepository->create($input);
+        activity('admin')
+            ->causedBy(Auth::guard('admins')->user())
+            ->performedOn($document)
+            ->withProperties(['data' => $document->attributesToArray()])
+            ->log('created');
 
         if (isset($input['tags']) && count($input['tags'])){
             foreach ($input['tags'] as $tag){
@@ -153,6 +160,7 @@ class DocumentController extends AppBaseController
 
             return redirect(route('admin.documents.index'));
         }
+        $old_data = $document->attributesToArray();
         $input = $request->all();
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->storeAs(
@@ -167,9 +175,17 @@ class DocumentController extends AppBaseController
 
         $input['disable_comment'] = (isset($input['disable_comment']) && $input['disable_comment']) == 1 ? 1 : 0;
         $input['draft'] = $input['save_type'] == Document::SAVE_TYPE_DRAFT ? 1 : 0;
-        $input['description_text'] = strip_tags($input['description']);
+        $input['description_text'] = preg_replace('/\s+/', ' ', strip_tags(str_replace('<', ' <', $input['description'])));
 
         $document = $this->documentRepository->update($input, $id);
+        activity('admin')
+            ->causedBy(Auth::guard('admins')->user())
+            ->performedOn($document)
+            ->withProperties([
+                'old_data' => $old_data,
+                'new_data' => $document->attributesToArray()
+            ])
+            ->log('updated');
 
         if (isset($input['tags']) && count($input['tags'])){
             $document->syncTags([]);
@@ -216,8 +232,15 @@ class DocumentController extends AppBaseController
 
             return redirect(route('admin.documents.index'));
         }
-
+        $old_data = $document->attributesToArray();
         $this->documentRepository->delete($id);
+        activity('admin')
+            ->causedBy(Auth::guard('admins')->user())
+            ->performedOn($document)
+            ->withProperties([
+                'data' => $old_data
+            ])
+            ->log('deleted');
 
         Flash::success('Document deleted successfully.');
 

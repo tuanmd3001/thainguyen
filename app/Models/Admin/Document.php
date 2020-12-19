@@ -40,6 +40,7 @@ class Document extends Model
     ];
 
     public $fillable = [
+        'slug',
         'name',
         'description',
         'description_text',
@@ -57,6 +58,7 @@ class Document extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'slug' => 'string',
         'name' => 'string',
         'description' => 'string',
         'description_text' => 'string',

@@ -31,12 +31,32 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link rel="stylesheet" href="{{url('assets/css/style.css')}}">
+    <style>
+        body {
+            background-color: white !important;
+            background-image: url('{{url('assets/images/login_bg.jpg')}}') !important;;
+            background-repeat: no-repeat !important;;
+            background-position: center center !important;;
+        }
+        .login-box, .register-box {
+            margin: 6% auto;
+        }
+        .quoc_huy {
+            width: 100px;
+        }
+        .login-box-body, .register-box-body {
+            border: 2px solid #F9F1E6;
 
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="javascrip:void(0)">PHẦN MỀM QUẢN LÝ TÀI LIỆU SỐ</a>
+        <p>
+            <img class="quoc_huy" src="{{url('assets/images/quoc_huy.png')}}">
+        </p>
+        <a href="javascrip:void(0)">PHẦN MỀM<br>QUẢN LÝ TÀI LIỆU SỐ</a>
     </div>
 
     <!-- /.login-logo -->

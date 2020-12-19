@@ -30,7 +30,10 @@ Route::post('/login', 'LoginController@login');
 Route::post('/logout', 'LoginController@logout')->name('logout');
 
 Route::group(['middleware' => ['auth']], function (){
-    Route::get('/', 'HomeController@index')->name('home');
     Route::get('/change_password', 'UserController@change_password')->name('change_password');
     Route::post('/change_password', 'UserController@change_password');
+
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/view_document/{slug}', 'HomeController@view_document')->name('view_document');
+    Route::post("/comment/add", 'HomeController@add_comment')->name('add_comment');
 });
