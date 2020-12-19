@@ -78,12 +78,12 @@ class ParseImage extends Command
             $query = sprintf("
                 update attachments set process_lock = '%s'
                 where parsed = %s
-                and extension in (%s)
+                and extension in ('%s')
                 and (process_lock = '' or process_lock is null) and retry_count < %s
                 order by updated_at asc limit 1",
                 $process_lock,
                 0,
-                implode(',', ['png', 'jpeg', 'gif']),
+                implode('\',\'', ['png', 'jpeg', 'gif']),
                 self::MAX_RETRY
             );
             DB::update(DB::raw($query));
