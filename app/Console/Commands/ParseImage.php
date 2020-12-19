@@ -116,8 +116,8 @@ class ParseImage extends Command
     private function process($attachment)
     {
         try {
-            foreach((new TesseractOCR())->availableLanguages() as $lang) printf($lang . "\n");
             $content = (new TesseractOCR(public_path('/storage/' . $attachment->file_path)))
+                ->lang('vie')
                 ->run();
             $this->unlock_process($attachment, '', $content);
             return null;
