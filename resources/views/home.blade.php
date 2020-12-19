@@ -124,27 +124,69 @@
     </script>
     <script>
         var next_page_url = null;
-        searchDocument({
-            type: 'newest'
-        }, true);
+        $( document ).ready(function (){
+            var urlParams = getUrlParameter()
+            if (Object.keys(urlParams).length > 0){
+                if (urlParams['tag']){
+                    if ($('#tag_selector').find("option[value='" + urlParams['tag'] + "']").length) {
+                        $('#tag_selector').val(urlParams['tag']).trigger('change');
+
+                    }
+                }
+                search();
+            } else {
+                searchDocument({
+                    type: 'newest'
+                }, true);
+            }
+        })
 
         $('#search_form').submit(function (event){
             event.preventDefault();
-            var formdata = $(this).serializeArray();
+            search();
+        });
+
+        function getUrlParameter() {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i,
+                sParam = [];
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+                sParam[sParameterName[0]] = sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+            return sParam;
+        }
+
+        function search(){
+            var formdata = $('#search_form').serializeArray();
             var data = {};
             $(formdata).each(function(index, obj){
-                data[obj.name] = obj.value;
+                if (obj.name.includes('[]')){
+                    let objname = obj.name.replace('[]', '', -1)
+                    if (data[objname]){
+                        data[objname].push(obj.value)
+                    }
+                    else {
+                        data[objname] = [obj.value]
+                    }
+                }
+                else {
+                    data[obj.name] = obj.value;
+                }
             });
             if (validateSearch(data)){
                 searchDocument(data, true)
             }
-        });
+        }
 
         function validateSearch(data){
             if (data['start'].trim() || data['end'].trim()){
                 return true;
             }
-            return !!(data['txtSearch'].trim() && (data['searchTitle'] || data['searchDesc'] || data['searchFile'] || data['searchComment']));
+            return !!(data['tags'].length > 0 || (data['txtSearch'].trim() && (data['searchTitle'] || data['searchDesc'] || data['searchFile'] || data['searchComment'])));
 
         }
 

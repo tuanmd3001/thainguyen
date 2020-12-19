@@ -238,7 +238,7 @@ class AdminUserController extends AppBaseController
                 're_new_password' => ['same:new_password']
             ]);
 
-            AdminUser::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
+            AdminUser::find(Auth::guard('admins')->user()->id)->update(['password'=> Hash::make($request->new_password)]);
 
             Flash::success('Đổi mật khẩu thành công.');
             return redirect(route('admin.home'));

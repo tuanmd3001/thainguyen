@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Admin\Attachment;
 use Illuminate\Console\Command;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
@@ -12,7 +13,7 @@ class ParseAttachment extends Command
      *
      * @var string
      */
-    protected $signature = 'command:ParseAttachment';
+    protected $signature = 'command:ParseImage';
 
     /**
      * The console command description.
@@ -36,8 +37,89 @@ class ParseAttachment extends Command
      *
      * @return int
      */
+//    public function handle()
+//    {
+//        printf((new TesseractOCR(public_path('/assets/images/text.png')))->run());
+//    }
+    private const MAX_RETRY = 3;
+
     public function handle()
     {
-        printf((new TesseractOCR(public_path('/assets/images/text.png')))->run());
+        $log_msg = "---\n";
+        $log_msg .= date("H:i:s") . "\n";
+        $process_lock = $this->lock_process();
+        if (!$process_lock) {
+            $log_msg .= "Failed to lock process\n";
+        } else {
+            $attachment = Attachment::where('process_lock', $process_lock)->first();
+
+            if ($attachment) {
+                $log_msg .= "Processing process_lock:" . $process_lock . "\n";
+                $log_msg .= "Attachment ID:" . $attachment->id . "\n";
+                $process_error = $this->process($attachment);
+
+                if ($process_error) {
+                    $log_msg .= $process_error . "\n";
+                } else {
+                    $log_msg .= "Parse done\n";
+                }
+            } else {
+                $log_msg = "";
+            }
+        }
+        print ($log_msg);
+    }
+
+    private function lock_process()
+    {
+        $process_lock = uniqid();
+        try {
+            $query = sprintf("
+                update attachments set process_lock = '%s'
+                where parsed = %s
+                and extension in (%s)
+                and (process_lock = '' or process_lock is null) and retry_count < %s
+                order by updated_at asc limit 1",
+                $process_lock,
+                0,
+                implode(',', ['png', 'jpeg', 'gif']),
+                self::MAX_RETRY
+            );
+            DB::update(DB::raw($query));
+            return $process_lock;
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            return null;
+        }
+    }
+
+    private function unlock_process($attachment, $process_msg, $content = null)
+    {
+        $attachment->process_lock = null;
+        $attachment->process_msg = $process_msg;
+
+        if ($content == null) {
+            $attachment->retry_count += 1;
+        }
+        else {
+            $attachment->parsed = 1;
+            $attachment->content = $content;
+            $attachment->retry_count = 0;
+        }
+
+        $attachment->save();
+    }
+
+    private function process($attachment)
+    {
+        try {
+            $content = (new TesseractOCR(public_path('/assets/images/text.png')))->run();
+            $this->unlock_process($attachment, '', $content);
+            return null;
+        } catch (\Exception $exception) {
+            $message = $exception->getMessage();
+            $this->unlock_process($attachment, $message);
+            return $message;
+        }
     }
 }

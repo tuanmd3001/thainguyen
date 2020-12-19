@@ -23,7 +23,7 @@
         <span>{{date( 'd/m/Y', strtotime( $document->created_at ))}}</span>
         &nbsp;—&nbsp;
         @foreach($document->tags()->get() as $current_tag)
-            <a href="#" class="badge" style="background-color: #17a2b8; margin: 0 1px">#{{$current_tag->getTranslation('name', 'vi')}}</a>
+            <a href="{{url('/?tag=' . $current_tag->getTranslation('name', 'vi'))}}" class="badge" style="background-color: #17a2b8; margin: 0 1px">#{{$current_tag->getTranslation('name', 'vi')}}</a>
         @endforeach
     </div>
     @if (!empty($document->thumbnail))

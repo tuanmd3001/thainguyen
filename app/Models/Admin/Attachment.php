@@ -24,7 +24,11 @@ class Attachment extends Model
         "is_draft",
         "downloadable",
         "mobile",
-        "upload_by"
+        "upload_by",
+        "parsed",
+        "process_lock",
+        "process_msg",
+        "retry_count",
     ];
 
     /**
@@ -45,6 +49,10 @@ class Attachment extends Model
         "is_draft" => 'integer',
         "downloadable" => 'integer',
         "mobile" => 'integer',
-        "upload_by" => 'integer'
+        "upload_by" => 'integer',
+        "parsed" => 'integer',
+        "process_lock" => 'string',
+        "process_msg" => 'string',
+        "retry_count" => 'integer'
     ];
 }

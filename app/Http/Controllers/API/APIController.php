@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 
 
 use App\Http\Controllers\AppBaseController;
+use App\Models\Admin\AdminUser;
 use App\Models\Admin\Attachment;
 use App\Models\Admin\Comment;
 use App\Models\Admin\Document;
@@ -29,7 +30,10 @@ class APIController extends AppBaseController
                 'file.mimes' => 'Chỉ hỗ trợ các file có định dạng: .mp3, .mp4, .png, .jpg, .gif, .doc, .docx, .pdf, .xls, .xlsx, .ppt, .pptx, .html, .htm, .xlm, .rtf',
                 'file.max' => 'File không được có dung lượng quá 5MB'
             ]);
-
+        $admin = AdminUser::find($request['user_id']);
+        if (empty($admin)){
+            return response()->json(['message' => 'User not found'], 401);
+        }
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first()], 401);
         }
@@ -50,7 +54,10 @@ class APIController extends AppBaseController
             "temp_id" => $request->has('temp_id') ? $request['temp_id'] : null,
             "upload_by" => $request['user_id']
         ]);
-
+        activity('admin')
+            ->causedBy($admin)
+            ->performedOn($attachment)
+            ->log('uploaded file');
 
         return response()->json([
             "success" => true,
@@ -104,6 +111,9 @@ class APIController extends AppBaseController
             if (isset($filters['end']) && trim($filters['end']) != ""){
                 $end = \DateTime::createFromFormat('d/m/Y', $filters['end']);
                 $itemsPaginated = $itemsPaginated->where('created_at', '<=', $end->format('Y-m-d').' 23:59:59');
+            }
+            if (isset($filters['tags']) && count($filters['tags'])){
+                $itemsPaginated = $itemsPaginated->withAnyTagsOfAnyType($filters['tags']);
             }
             $itemsPaginated = $itemsPaginated->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(self::PER_PAGE);
         }

@@ -40,7 +40,7 @@ class UserController extends AppBaseController
                 're_new_password' => ['same:new_password']
             ]);
 
-            User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
+            User::find(Auth::guard('web')->user()->id)->update(['password'=> Hash::make($request->new_password)]);
 
             Flash::success('Đổi mật khẩu thành công.');
             return redirect(route('home'));
