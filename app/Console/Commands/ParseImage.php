@@ -78,6 +78,7 @@ class ParseImage extends Command
             $query = sprintf("
                 update attachments set attachments.process_lock = '%s'
                 where attachments.parsed = %s
+                and attachments.document_id is not null
                 and attachments.extension in ('%s')
                 and (attachments.process_lock = '' or attachments.process_lock is null)
                 and attachments.retry_count < %s
