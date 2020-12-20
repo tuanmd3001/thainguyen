@@ -68,7 +68,7 @@
             <div class="lg:ml-auto mt-10 lg:mt-0 flex items-center">
 {{--                <a href="/" class="no-underline hover:underline uppercase">Home</a>--}}
 {{--                <a href="/releases" class="ml-5 no-underline hover:underline uppercase">Releases</a>--}}
-{{--                <a href="/forge" class="ml-5 no-underline hover:underline uppercase">Forge</a>--}}
+                <a href="{{ route('change_password') }}" class="ml-5 no-underline hover:underline uppercase" style="color: white">Đổi mật khẩu</a>
                 <a href="{{ route('logout') }}" class="ml-5 no-underline hover:underline uppercase" style="color: white"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     Đăng xuất

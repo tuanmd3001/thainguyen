@@ -31,7 +31,7 @@ class UserController extends AppBaseController
 
     public function change_password(Request $request){
         if($request->isMethod('get')){
-            return view('users.change_password');
+            return view('change_password');
         }
         elseif($request->isMethod('post')) {
             $request->validate( [
@@ -39,14 +39,13 @@ class UserController extends AppBaseController
                 'new_password' => ['required'],
                 're_new_password' => ['same:new_password']
             ]);
-
             User::find(Auth::guard('web')->user()->id)->update(['password'=> Hash::make($request->new_password)]);
 
             Flash::success('Đổi mật khẩu thành công.');
-            return redirect(route('home'));
+            return redirect('/');
         }
         else {
-            return redirect(route('home'));
+            return redirect('/');
         }
 
     }

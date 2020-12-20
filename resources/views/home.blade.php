@@ -70,9 +70,9 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="input-daterange input-group" id="datepicker">
-                                                <span class="input-group-addon">Từ ngày</span>
+                                                <span class="input-group-addon">Từ</span>
                                                 <input type="text" class="input-sm form-control" name="start" />
-                                                <span class="input-group-addon">Đến ngày</span>
+                                                <span class="input-group-addon">Đến</span>
                                                 <input type="text" class="input-sm form-control" name="end" />
                                             </div>
                                         </div>
