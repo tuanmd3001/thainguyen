@@ -8,7 +8,7 @@ use App\Http\Requests\Admin\CreateDocumentRequest;
 use App\Http\Requests\Admin\UpdateDocumentRequest;
 use App\Models\Admin\Attachment;
 use App\Models\Admin\Document;
-use App\Repositories\Admin\DocumentRepository;
+use App\Repositories\DocumentRepository;
 use Flash;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Support\Facades\Auth;
