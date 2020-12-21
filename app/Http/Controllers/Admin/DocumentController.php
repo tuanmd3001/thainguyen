@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTables\Admin\DocumentDataTable;
+use App\DataTables\DocumentDataTable;
 use App\Http\Requests\Admin;
 use App\Http\Requests\Admin\CreateDocumentRequest;
 use App\Http\Requests\Admin\UpdateDocumentRequest;
