@@ -61,7 +61,7 @@
             </a>
 
             <div class="desc text-center sm:text-left">
-                <div class="desc__title1 uppercase">Thái Nguyên</div>
+                <div class="desc__title1 uppercase">Sở TT&TT Thái Nguyên</div>
                 <div class="desc__title__main uppercase">Phần mềm quản lý tài liệu số</div>
             </div>
 

@@ -97,7 +97,7 @@
     </div>
     <div id="documents-container">
     </div>
-    <div id="showMoreBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+    <div id="showMoreBtn" class="uppercase flex items-center justify-center flex-1 font-sans hidden">
         <a href="javascript:void(0)" onclick="showMore()" rel="next" class="block no-underline text-light hover:text-black px-5">
             Hiển thị thêm
         </a>
@@ -126,7 +126,12 @@
         var next_page_url = null;
         $( document ).ready(function (){
             var urlParams = getUrlParameter()
-            if (Object.keys(urlParams).length > 0){
+            var keys = Object.keys(urlParams);
+            var idx = keys.indexOf("");
+            if (idx !== -1) {
+                keys.splice(idx, 1);
+            }
+            if (keys.length > 0){
                 if (urlParams['tag']){
                     if ($('#tag_selector').find("option[value='" + urlParams['tag'] + "']").length) {
                         $('#tag_selector').val(urlParams['tag']).trigger('change');
@@ -186,7 +191,7 @@
             if (data['start'].trim() || data['end'].trim()){
                 return true;
             }
-            return !!(data['tags'].length > 0 || (data['txtSearch'].trim() && (data['searchTitle'] || data['searchDesc'] || data['searchFile'] || data['searchComment'])));
+            return !!((data['tags'] && data['tags'].length > 0) || (data['txtSearch'].trim() && (data['searchTitle'] || data['searchDesc'] || data['searchFile'] || data['searchComment'])));
 
         }
 
