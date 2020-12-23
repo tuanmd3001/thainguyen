@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\CreateDocumentRequest;
 use App\Http\Requests\Admin\UpdateDocumentRequest;
 use App\Models\Admin\Attachment;
 use App\Models\Admin\Document;
+use App\Models\Admin\Privacy;
 use App\Repositories\DocumentRepository;
 use Flash;
 use App\Http\Controllers\AppBaseController;
@@ -46,7 +47,8 @@ class DocumentController extends AppBaseController
     {
         $temp_id = "temp_" . Uuid::uuid4();
         $tags = Tag::all();
-        return view('admin.documents.create', compact('tags', 'temp_id'));
+        $privacies = Privacy::all();
+        return view('admin.documents.create', compact('tags', 'temp_id', 'privacies'));
     }
 
     /**
@@ -141,7 +143,8 @@ class DocumentController extends AppBaseController
         $temp_id = "temp_" . Uuid::uuid4();
         $tags = Tag::all();
         $document_files = Attachment::where("document_id", $id)->get();
-        return view('admin.documents.edit', compact('document', 'temp_id', 'tags', 'document_files'));
+        $privacies = Privacy::all();
+        return view('admin.documents.edit', compact('document', 'temp_id', 'tags', 'document_files', 'privacies'));
     }
 
     /**

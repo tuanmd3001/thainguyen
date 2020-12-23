@@ -175,7 +175,12 @@
             </div>
             <div class="form-group col-md-12 @if($errors->has('privacy')) has-error @endif">
                 {!! Form::label('privacy', 'Cấp độ bảo mật:') !!}
-                {!! Form::number('privacy', null, ['class' => 'form-control']) !!}
+                <select class="form-control select2 select2-hidden-accessible" name="privacy">
+                    <option></option>
+                    @foreach($privacies as $privacy)
+                        <option @if((old('privacy') && old('privacy') == $privacy->id) || (isset($document) && $document->privacy == $privacy->id)) selected @endif value="{{$privacy->id}}">{{$privacy->name}}</option>
+                    @endforeach
+                </select>
                 @if($errors->has('privacy'))
                     <div class="help-block">{{ $errors->first('privacy') }}</div>
                 @endif
@@ -272,9 +277,9 @@
                 @foreach(old('files') as $uploaded_file)
                 @php $file_info = json_decode($uploaded_file) @endphp
                 var mockFile = {
-                    name: "{{$file_info->filename}}",
+                    name: "{{ property_exists($file_info, 'filename') ? $file_info->filename : $file_info->name}}",
                     id: "{{$file_info->id}}",
-                    size: "{{$file_info->total}}",
+                    size: "{{property_exists($file_info, 'total') ? $file_info->total : $file_info->size}}",
                     accepted: true,
                     upload: {!! $uploaded_file !!}
                 }
@@ -415,6 +420,9 @@
         $('#tag_selector').select2({
             tags: true
         });
+        $('select[name="privacy"]').select2({
+            placeholder: "--- Chọn cấp độ bảo mật ---"
+        })
         $('select[name="status"]').select2({
             placeholder: "--- Chọn trạng thái ---"
         })

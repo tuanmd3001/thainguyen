@@ -8,7 +8,7 @@
 )
     <li class="treeview {{ Request::is(['admin/tags*', 'admin/documents*']) ? 'active' : '' }}">
         <a href="#">
-            <i class="fa fa-users"></i>
+            <i class="fa fa-book"></i>
             <span>Quản lý tài liệu số</span>
             <span class="pull-right-container">
             <i class="fa fa-angle-left pull-right"></i>
@@ -123,6 +123,15 @@
                 </li>
             @endif
         </ul>
+    </li>
+@endif
+
+@if($user->can('Privacy'))
+    <li class="{{ Request::is("admin/privacy") ? 'active' : ''}}">
+        <a href="{{ route('admin.privacy.index') }}">
+            <i class="fa fa-shield"></i>
+            <span>Cấp độ bảo mật</span>
+        </a>
     </li>
 @endif
 

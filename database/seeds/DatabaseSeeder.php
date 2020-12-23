@@ -102,6 +102,14 @@ class DatabaseSeeder extends Seeder
                 'guard_name' => 'admins'
             ]);
         }
+        $privacy = Permission::where('guard_name', 'admins')->where('name', 'Privacy')->first();
+        if (!$privacy){
+            $privacy = Permission::create([
+                'name' => 'Privacy',
+                'display_name' => 'Quản lý cấp độ bảo mật',
+                'guard_name' => 'admins'
+            ]);
+        }
 
         // $this->call(UsersTableSeeder::class);
     }
