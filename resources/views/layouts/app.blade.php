@@ -43,7 +43,7 @@
             margin-bottom: 5px;
         }
         header .desc .desc__title__main {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: normal;
             margin: 0px;
         }
@@ -57,12 +57,12 @@
     <div class="container mx-auto px-5 lg:max-w-screen">
         <div class="flex items-center flex-col lg:flex-row">
             <a href="/" class="flex items-center no-underline text-brand">
-                <img src="{{ asset('assets/images/quoc_huy.png') }}" style="width: 60px">
+                <img src="{{ asset('assets/images/quoc_huy.png') }}" style="width: 80px">
             </a>
 
             <div class="desc text-center sm:text-left">
-                <div class="desc__title1 uppercase">Sở TT&TT Thái Nguyên</div>
-                <div class="desc__title__main uppercase">Phần mềm quản lý tài liệu số</div>
+                <div class="desc__title1 uppercase">Sở TT&TT tỉnh Thái Nguyên</div>
+                <div class="desc__title__main" style="color: #D00F22">Chuẩn hóa, tạo lập, chuyển đổi cơ sở dữ liệu</div>
             </div>
 
             <div class="lg:ml-auto mt-10 lg:mt-0 flex items-center">
