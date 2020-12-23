@@ -117,4 +117,13 @@
     </li>
 @endif
 
+@if($user->can('Config'))
+    <li class="{{ Request::is("admin/config") ? 'active' : ''}}">
+        <a href="{{ route('admin.config.edit') }}">
+            <i class="fa fa-cogs"></i>
+            <span>Cài đặt hệ thống</span>
+        </a>
+    </li>
+@endif
+
 

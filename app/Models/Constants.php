@@ -15,13 +15,11 @@ class Constants
         self::GENDER_MALE => "Nam"
     ];
 
-    const HC_PHO_THONG = 1;
-    const HC_NGOAI_GIAO = 2;
-    const HC_CONG_VU = 3;
-    const HC_LABEL = [
-        self::HC_PHO_THONG => "Hộ chiếu phổ thông",
-        self::HC_NGOAI_GIAO => "Hộ chiếu ngoại giao",
-        self::HC_CONG_VU => "Hộ chiếu công vụ",
+    const TEXT_CODE_TELEX = 0;
+    const TEXT_CODE_VNI = 1;
+    const TEXT_CODE_LABEL = [
+        self::TEXT_CODE_TELEX => "TELEX",
+        self::TEXT_CODE_VNI => "VNI"
     ];
 
     const ALLOW_UPLOAD_MIME_TYPE = [

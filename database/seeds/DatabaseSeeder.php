@@ -86,6 +86,14 @@ class DatabaseSeeder extends Seeder
                 'guard_name' => 'admins'
             ]);
         }
+        $config = Permission::where('guard_name', 'admins')->where('name', 'Config')->first();
+        if (!$config){
+            $users = Permission::create([
+                'name' => 'Config',
+                'display_name' => 'Cài đặt hệ thống',
+                'guard_name' => 'admins'
+            ]);
+        }
 
         // $this->call(UsersTableSeeder::class);
     }

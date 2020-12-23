@@ -8,6 +8,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Models\Admin\AdminUser;
 use App\Models\Admin\Attachment;
 use App\Models\Admin\Comment;
+use App\Models\Admin\Config;
 use App\Models\Admin\Document;
 use App\Models\Constants;
 use Illuminate\Http\Request;
@@ -39,8 +40,16 @@ class APIController extends AppBaseController
         }
         $file = $request->file('file');
         $store_name = Uuid::uuid4();
+        $config = Config::first();
+        if ($config && $config->save_path != "") {
+            $save_path = $config->save_path;
+        }
+        else {
+            $save_path = 'attachments';
+        }
+
         $path = $file->storeAs(
-            'attachments', $store_name . '.' . $file->getClientOriginalExtension(),
+            $save_path, $store_name . '.' . $file->getClientOriginalExtension(),
             ['disk' => 'public']
         );
 
@@ -69,10 +78,11 @@ class APIController extends AppBaseController
 
     public function search(Request $request)
     {
-        return response()->json($this->getDocuments($request->all()));
+        return response()->json($this->getDocuments($request));
     }
 
-    private function getDocuments($filters){
+    private function getDocuments($request){
+        $filters = $request->all();
         $itemsPaginated = null;
         if (isset($filters['type'])){
             if ($filters['type'] == 'newest') {
@@ -80,6 +90,15 @@ class APIController extends AppBaseController
             }
         }
         else {
+            $config = Config::first();
+            if ($config && $config->log_search == 1) {
+                activity('web')
+                    ->causedBy($request->user())
+                    ->withProperties([
+                        'filters' => $filters
+                    ])
+                    ->log('search');
+            }
             $itemsPaginated = Document::where('draft', Document::SAVE_TYPE_PUBLIC)
                 ->where('status', Document::STATUS_EXPLOIT);
             if (isset($filters['txtSearch']) && trim($filters['txtSearch']) != ""){
