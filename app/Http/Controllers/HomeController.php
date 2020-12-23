@@ -84,6 +84,16 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function viewFile($name){
+        $attachment  = Attachment::where('store_name', $name)->first();
+        if ($attachment){
+            $file= public_path(). "/storage/" . $attachment->file_path;
+            $headers = [];
+            return response()->file($file, $headers);
+        }
+        return "Không tìm thấy file";
+    }
+
     public function downloadFile($name)
     {
         $attachment  = Attachment::where('store_name', $name)->first();

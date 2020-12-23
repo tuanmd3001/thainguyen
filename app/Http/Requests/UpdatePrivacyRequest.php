@@ -25,7 +25,7 @@ class UpdatePrivacyRequest extends FormRequest
     public function rules()
     {
         return [
-            'ten' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'code' => "string|nullable",
             'created_at' => 'nullable',
             'updated_at' => 'nullable'

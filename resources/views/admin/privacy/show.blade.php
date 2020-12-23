@@ -11,7 +11,7 @@
             <div class="box-body">
                 <div class="row" style="padding-left: 20px">
                     @include('admin.privacy.show_fields')
-                    <a href="{{ route('admin.privacy.edit', ['capDonVi' => $privacy->id]) }}" class="btn btn-primary">Sửa</a>
+                    <a href="{{ route('admin.privacy.edit', $privacy->id) }}" class="btn btn-primary">Sửa</a>
                     <a href="{{ route('admin.privacy.index') }}" class="btn btn-default">Back</a>
                 </div>
             </div>

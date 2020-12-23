@@ -76,7 +76,7 @@ class PrivacyController extends Controller
             return redirect(route('admin.privacy.index'));
         }
 
-        return view('admin.privacy.show')->with('Privacy', $privacy);
+        return view('admin.privacy.show')->with('privacy', $privacy);
     }
 
     /**
@@ -96,7 +96,7 @@ class PrivacyController extends Controller
             return redirect(route('admin.privacy.index'));
         }
 
-        return view('admin.privacy.edit')->with('Privacy', $privacy);
+        return view('admin.privacy.edit')->with('privacy', $privacy);
     }
 
     /**
