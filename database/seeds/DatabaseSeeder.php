@@ -88,9 +88,17 @@ class DatabaseSeeder extends Seeder
         }
         $config = Permission::where('guard_name', 'admins')->where('name', 'Config')->first();
         if (!$config){
-            $users = Permission::create([
+            $config = Permission::create([
                 'name' => 'Config',
                 'display_name' => 'Cài đặt hệ thống',
+                'guard_name' => 'admins'
+            ]);
+        }
+        $log = Permission::where('guard_name', 'admins')->where('name', 'Log')->first();
+        if (!$log){
+            $log = Permission::create([
+                'name' => 'Log',
+                'display_name' => 'Tra cứu nhật ký người đọc',
                 'guard_name' => 'admins'
             ]);
         }

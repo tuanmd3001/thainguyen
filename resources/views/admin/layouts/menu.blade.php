@@ -37,9 +37,10 @@
 
 @if($user->can('Users') ||
     $user->can('Roles') ||
-    $user->can('Permissions')
+    $user->can('Permissions') ||
+    $user->can('Log')
 )
-    <li class="treeview {{ Request::is(['admin/users*', 'admin/roles*', 'admin/permissions*']) ? 'active' : '' }}">
+    <li class="treeview {{ Request::is(['admin/users*', 'admin/roles*', 'admin/permissions*', 'admin/activities*']) ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-users"></i>
             <span>Quản lý người đọc</span>
@@ -69,6 +70,14 @@
                     <a href="{{ route('admin.permissions.index') }}">
                         <i class="fa fa-circle-o"></i>
                         <div>Danh sách quyền người đọc</div>
+                    </a>
+                </li>
+            @endif
+            @if($user->can('Log'))
+                <li class="{{ Request::is('admin/activities*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.activities.index') }}">
+                        <i class="fa fa-circle-o"></i>
+                        <div>Nhật ký người đọc</div>
                     </a>
                 </li>
             @endif

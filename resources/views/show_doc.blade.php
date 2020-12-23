@@ -66,7 +66,7 @@
                                     </a>
                                     @endif
                                     <a class="btn btn-primary btn-xs" title="Tải xuống"
-                                       href="{{ url('storage/' . $attachment->file_path) }}" download>
+                                       href="{{ route('download', $attachment->store_name) }}" target="_blank">
                                         <span class="glyphicon glyphicon-download-alt"></span>
                                     </a>
                                 </div>

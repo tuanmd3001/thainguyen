@@ -48,4 +48,5 @@ Route::group(['middleware' => ['admin_auth']], function (){
     Route::resource('documents', 'Admin\DocumentController')->middleware('userCan:Documents');
     Route::get('config', 'Admin\ConfigController@edit')->name('config.edit')->middleware('userCan:Config');
     Route::patch('config', 'Admin\ConfigController@update')->name('config.update')->middleware('userCan:Config');
+    Route::get('activities', 'Admin\LogController@index')->name('activities.index')->middleware('userCan:Log');
 });

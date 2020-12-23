@@ -36,4 +36,6 @@ Route::group(['middleware' => ['auth']], function (){
     Route::get('/', 'HomeController@index')->name('home');
     Route::get('/view_document/{slug}', 'HomeController@view_document')->name('view_document');
     Route::post("/comment/add", 'HomeController@add_comment')->name('add_comment');
+
+    Route::get('/download/{name}', 'HomeController@downloadFile')->name('download');
 });

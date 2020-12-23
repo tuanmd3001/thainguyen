@@ -79,4 +79,24 @@ class HomeController extends Controller
         }
         return redirect()->back();
     }
+
+    public function downloadFile($name)
+    {
+        $attachment  = Attachment::where('store_name', $name)->first();
+        if ($attachment){
+
+            $config = Config::first();
+            if ($config && $config->log_comment == 1) {
+                activity('web')
+                    ->causedBy(Auth::user())
+                    ->performedOn($attachment)
+                    ->log('download');
+            }
+
+            $file= public_path(). "/storage/" . $attachment->file_path;
+            $headers = [];
+            return response()->download($file, $attachment->file_name, $headers);
+        }
+        return "Không tìm thấy file";
+    }
 }
