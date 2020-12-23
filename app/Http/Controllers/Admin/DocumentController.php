@@ -93,7 +93,9 @@ class DocumentController extends AppBaseController
                 Attachment::where("temp_id", $input['temp_id'])->where('id', $file_info->id)->update([
                     'document_id' => $document->id,
                     'temp_id' => null,
-                    'is_draft' => 0
+                    'is_draft' => 0,
+                    'downloadable' => $file_info->downloadable,
+                    'mobile' => $file_info->mobile
                 ]);
             }
         }
@@ -202,10 +204,12 @@ class DocumentController extends AppBaseController
             foreach ($input['files'] as $upload_file){
                 $file_info = json_decode($upload_file);
                 if (property_exists($file_info, "id")){
-                    Attachment::where("temp_id", $input['temp_id'])->where('id', $file_info->id)->update([
+                    Attachment::where('id', $file_info->id)->update([
                         'document_id' => $document->id,
                         'temp_id' => null,
-                        'is_draft' => 0
+                        'is_draft' => 0,
+                        'downloadable' => $file_info->downloadable,
+                        'mobile' => $file_info->mobile
                     ]);
                     $keep_file[] = $file_info->id;
                 }

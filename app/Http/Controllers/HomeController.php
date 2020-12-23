@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Tags\Tag;
+use Jenssegers\Agent\Agent;
 
 class HomeController extends Controller
 {
@@ -36,6 +37,9 @@ class HomeController extends Controller
             ->where('is_draft', 0)->get();
         $comments = Comment::where('document_id', $document->id)->get();
 
+        $agent = new Agent();
+        $isMobileDevice = $agent->isMobile() || $agent->isTablet();
+
         $config = Config::first();
         if ($config && $config->log_view == 1) {
             activity('web')
@@ -44,7 +48,7 @@ class HomeController extends Controller
                 ->log('view');
         }
 
-        return view('show_doc', compact("document", 'attachments', 'comments'));
+        return view('show_doc', compact("document", 'attachments', 'comments', 'isMobileDevice'));
     }
 
     public function add_comment(Request $request){

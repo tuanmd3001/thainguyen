@@ -131,6 +131,20 @@
                                     <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
                                 </div>
                             </div>
+                            <div class="col-sm-12">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" class="form-check-input downloadable" name="downloadable" checked>
+                                        Cho phép tải
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" class="form-check-input mobile" name="mobile" checked>
+                                        Hiển thị cho các thiết bị smartphone
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -280,6 +294,8 @@
                     name: "{{ property_exists($file_info, 'filename') ? $file_info->filename : $file_info->name}}",
                     id: "{{$file_info->id}}",
                     size: "{{property_exists($file_info, 'total') ? $file_info->total : $file_info->size}}",
+                    downloadable: {{$file_info->downloadable}},
+                    mobile: {{$file_info->mobile}},
                     accepted: true,
                     upload: {!! $uploaded_file !!}
                 }
@@ -300,6 +316,8 @@
                     name: "{{$uploaded_file->file_name}}",
                     id: "{{$uploaded_file->id}}",
                     size: "{{$uploaded_file->size}}",
+                    downloadable: {{$uploaded_file->downloadable}},
+                    mobile: {{$uploaded_file->mobile}},
                     accepted: true,
                     upload: {uuid: uuidv4()}
                 }
@@ -315,12 +333,34 @@
                 }).appendTo('#uploaded_file');
                 @endforeach
                 @endif
+                for (let i = 0; i < this.files.length; i++){
+                    var that = this;
+
+                    if (this.files[i].downloadable === 1){
+                        this.files[i].previewElement.querySelector(".downloadable").setAttribute('checked', "checked")
+                    }
+                    else {
+                        this.files[i].previewElement.querySelector(".downloadable").removeAttribute('checked')
+                    }
+                    this.files[i].previewElement.querySelector(".downloadable").onchange = function() { fileAllowDownloadChange(this, that.files[i]); };
+
+                    if (this.files[i].mobile === 1){
+                        this.files[i].previewElement.querySelector(".mobile").setAttribute('checked', "checked")
+                    }
+                    else {
+                        this.files[i].previewElement.querySelector(".mobile").removeAttribute('checked')
+                    }
+                    this.files[i].previewElement.querySelector(".mobile").onchange = function() { fileAllowMobileChange(this, that.files[i]); };
+                }
             }
         });
 
         myDropzone.on("addedfile", function(file) {
             // Hookup the start button
+            console.log(file)
             file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file); };
+            file.previewElement.querySelector(".downloadable").onchange = function() { fileAllowDownloadChange(this, file); };
+            file.previewElement.querySelector(".mobile").onchange = function() { fileAllowMobileChange(this, file); };
         });
 
         myDropzone.on("removedfile", function(file) {
@@ -367,10 +407,12 @@
             console.log(file)
             let error_msg = "Có lỗi xảy ra. Vui lòng thử lại";
             if (response.hasOwnProperty('success') && response.success === true && response.hasOwnProperty('id')){
+                let downloadable = $(file.previewElement).find("input[name='downloadable']:checked").length > 0 ? 1 : 0;
+                let mobile = $(file.previewElement).find("input[name='mobile']:checked").length > 0 ? 1 : 0;
                 $('<input>').attr({
                     type: 'hidden',
                     name: 'files[]',
-                    value: JSON.stringify({...file.upload, id: response.id}),
+                    value: JSON.stringify({...file.upload, id: response.id, downloadable: downloadable, mobile: mobile}),
                     'data-uuid': file.upload.uuid
                 }).appendTo('#uploaded_file');
                 return;
@@ -403,6 +445,23 @@
                 var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        }
+
+        function fileAllowDownloadChange(el, file){
+            let f = $('#uploaded_file').find('input[data-uuid="' + file.upload.uuid + '"]')
+            if (f.length > 0){
+                let value = JSON.parse(f.val());
+                value.downloadable = $(el).is(":checked") ? 1 : 0
+                f.val(JSON.stringify(value))
+            }
+        }
+        function fileAllowMobileChange(el, file){
+            let f = $('#uploaded_file').find('input[data-uuid="' + file.upload.uuid + '"]')
+            if (f.length > 0){
+                let value = JSON.parse(f.val());
+                value.mobile = $(el).is(":checked") ? 1 : 0
+                f.val(JSON.stringify(value))
+            }
         }
     </script>
     <script src="https://cdn.ckeditor.com/ckeditor5/23.1.0/classic/ckeditor.js"></script>

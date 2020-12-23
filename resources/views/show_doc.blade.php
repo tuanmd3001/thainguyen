@@ -45,34 +45,38 @@
             <div class="panel-body">
                 <ul class="list-group">
                 @foreach($attachments as $attachment)
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-xs-9 col-md-10">
-                                <div class="comment-text">
-                                    {{ $attachment->file_name }}
+                    @if (($isMobileDevice && $attachment->mobile) || !$isMobileDevice)
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-xs-9 col-md-10">
+                                    <div class="comment-text">
+                                        {{ $attachment->file_name }}
+                                    </div>
+                                    <div>
+                                        <div class="mic-info">
+                                            {{ formatSizeUnits($attachment->size) }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="mic-info">
-                                        {{ formatSizeUnits($attachment->size) }}
+                                <div class="col-xs-3 col-md-2">
+                                    <div class="action text-right">
+                                        @if(in_array($attachment->extension, ['pdf', 'png, jpg']))
+                                            <a class="btn btn-success btn-xs" title="Xem"
+                                               href="{{ url('storage/' . $attachment->file_path) }}" target="_blank">
+                                                <span class="glyphicon glyphicon-eye-open"></span>
+                                            </a>
+                                        @endif
+                                        @if ($attachment->downloadable)
+                                            <a class="btn btn-primary btn-xs" title="Tải xuống"
+                                               href="{{ route('download', $attachment->store_name) }}" target="_blank">
+                                                <span class="glyphicon glyphicon-download-alt"></span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-3 col-md-2">
-                                <div class="action text-right">
-                                    @if(in_array($attachment->extension, ['pdf', 'png, jpg']))
-                                    <a class="btn btn-success btn-xs" title="Xem"
-                                       href="{{ url('storage/' . $attachment->file_path) }}" target="_blank">
-                                        <span class="glyphicon glyphicon-eye-open"></span>
-                                    </a>
-                                    @endif
-                                    <a class="btn btn-primary btn-xs" title="Tải xuống"
-                                       href="{{ route('download', $attachment->store_name) }}" target="_blank">
-                                        <span class="glyphicon glyphicon-download-alt"></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    @endif
                 @endforeach
                 </ul>
             </div>
