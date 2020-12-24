@@ -79,7 +79,10 @@ class LogDataTable extends DataTable
                 }
                 elseif ($temp->description == 'view'){
                     $doc = $temp->subject;
-                    return "Tài liệu: <a href='".route('view_document', $doc->slug)."'>".$doc->name."</a>";
+                    if ($doc){
+                        return "Tài liệu: <a href='".route('view_document', $doc->slug)."'>".$doc->name."</a>";
+                    }
+                    return "";
                 }
                 elseif ($temp->description == 'comment'){
                     $comment = $temp->subject;
