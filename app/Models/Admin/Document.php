@@ -88,7 +88,7 @@ class Document extends Model
     ];
 
     protected $appends = [
-        'status_label'
+        'status_label', 'privacy_label'
     ];
 
     public function getStatusLabelAttribute(){
@@ -96,6 +96,16 @@ class Document extends Model
             return self::STATUS_LABEL[$this->status];
         }
         return "";
+    }
+
+    public function getPrivacyLabelAttribute(){
+        $privacy = Privacy::find($this->privacy);
+        if ($privacy){
+            return $privacy->name;
+        }
+        else {
+            return "";
+        }
     }
 
 }
