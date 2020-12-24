@@ -97,7 +97,7 @@
     </div>
     <div id="documents-container">
     </div>
-    <div id="showMoreBtn" class="uppercase flex items-center justify-center flex-1 font-sans hidden">
+    <div id="showMoreBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
         <a href="javascript:void(0)" onclick="showMore()" rel="next" class="block no-underline text-light hover:text-black px-5">
             Hiển thị thêm
         </a>
@@ -231,7 +231,7 @@
             if (refresh){
                 $('#documents-container').empty();
             }
-            if (data.hasOwnProperty('title')){
+            if (data.hasOwnProperty('title') && refresh){
                 $('#documents-container').append('<h1 class="mb-5">' + data.title + '</h1>')
             }
             if (data.hasOwnProperty('data') && data.data.length > 0){
