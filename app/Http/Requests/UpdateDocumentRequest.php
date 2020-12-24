@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Admin\Document;
@@ -26,7 +26,7 @@ class UpdateDocumentRequest extends FormRequest
     public function rules()
     {
         $rules = Document::$rules;
-        
+
         return $rules;
     }
 }

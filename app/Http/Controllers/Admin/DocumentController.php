@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DataTables\DocumentDataTable;
-use App\Http\Requests\Admin;
-use App\Http\Requests\Admin\CreateDocumentRequest;
-use App\Http\Requests\Admin\UpdateDocumentRequest;
+use App\Http\Requests\CreateDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Admin\Attachment;
 use App\Models\Admin\Document;
 use App\Models\Admin\Privacy;
