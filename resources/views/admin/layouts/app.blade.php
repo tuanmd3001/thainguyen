@@ -30,6 +30,28 @@
 
     @yield('css')
     <link rel="stylesheet" href="{{url('assets/css/style.css')}}">
+    <style>
+        .logo-mini img{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+        }
+        .logo-lg img{
+            width: 35px;
+            height: 35px;
+        }
+        .logo-lg {
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        .logo-lg .pull-left {
+            margin-right: -10px;
+        }
+        .logo-lg .pull-right {
+            line-height: 18px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body class="skin-blue-light sidebar-mini">
@@ -40,9 +62,22 @@
             <!-- Logo -->
             <a href="javascript:void(0)" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
-                <span class="logo-mini">TN</span>
+                <span class="logo-mini">
+                    <img src="{{ asset('assets/images/quoc_huy.png') }}">
+                </span>
                 <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg">Thái Nguyên</span>
+                <span class="logo-lg">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <img src="{{ asset('assets/images/quoc_huy.png') }}">
+                        </div>
+                        <div class="col-md-10">
+                            <div style="color: white; font-size: 16px !important; line-height: 25px" class="uppercase">
+                                Sở Thông tin & truyền thông Tỉnh Thái Nguyên
+                            </div>
+                        </div>
+                    </div>
+                </span>
             </a>
 
             <!-- Header Navbar -->
@@ -51,6 +86,9 @@
                 <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
                 </a>
+{{--                <div class="collapse navbar-collapse pull-left" id="navbar-collapse" style="padding-top: 10px;padding-left: 20px;">--}}
+{{--                    <span style="color: #D00F22; font-size: 20px">Chuẩn hóa, tạo lập, chuyển đổi cơ sở dữ liệu</span>--}}
+{{--                </div>--}}
                 <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">

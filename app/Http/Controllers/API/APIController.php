@@ -13,8 +13,10 @@ use App\Models\Admin\Document;
 use App\Models\Constants;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
+use Spatie\Activitylog\Models\Activity;
 
 class APIController extends AppBaseController
 {
@@ -88,6 +90,9 @@ class APIController extends AppBaseController
             if ($filters['type'] == 'newest') {
                 $itemsPaginated = $this->getNewest();
             }
+            if ($filters['type'] == 'mostview'){
+                $itemsPaginated = $this->getMostView();
+            }
         }
         else {
             $config = Config::first();
@@ -149,6 +154,23 @@ class APIController extends AppBaseController
     {
         return Document::where('draft', Document::SAVE_TYPE_PUBLIC)
             ->where('status', Document::STATUS_EXPLOIT)
+            ->orderBy('created_at', 'desc')->orderBy('id', 'desc')
+            ->paginate(self::PER_PAGE);
+    }
+
+    private function getMostView(){
+        $query = sprintf("SELECT DISTINCT(subject_id) as document_id FROM activity_log where log_name = 'web' and description = 'view' GROUP BY document_id ORDER BY count(1) DESC, document_id DESC;");
+        return Document::where('draft', Document::SAVE_TYPE_PUBLIC)
+            ->where('status', Document::STATUS_EXPLOIT)
+            ->whereIn('id', function($query){
+                $query->select(DB::raw('DISTINCT subject_id as document_id'))
+                    ->from('activity_log')
+                    ->where('log_name', 'web')
+                    ->where('description', 'view')
+                    ->groupBy('document_id')
+                    ->orderBy(DB::raw('count(1)'), 'desc')
+                    ->orderBy('document_id', 'desc');
+            })
             ->orderBy('created_at', 'desc')->orderBy('id', 'desc')
             ->paginate(self::PER_PAGE);
     }
