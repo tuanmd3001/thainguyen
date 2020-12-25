@@ -101,7 +101,7 @@
         <div id="searchResult-container">
         </div>
         <div id="showMoreSearchBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('search')" rel="next" class="block no-underline text-light hover:text-black px-5">
+            <a href="javascript:void(0)" onclick="showMore('search')" rel="next" class="block no-underline text-light hover:text-black p-5">
                 Hiển thị thêm
             </a>
         </div>
@@ -110,7 +110,7 @@
         <div id="newest-container">
         </div>
         <div id="showMoreNewestBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('newest')" rel="next" class="block no-underline text-light hover:text-black px-5">
+            <a href="javascript:void(0)" onclick="showMore('newest')" rel="next" class="block no-underline text-light hover:text-black p-5">
                 Hiển thị thêm
             </a>
         </div>
@@ -119,7 +119,7 @@
         <div id="mostView-container">
         </div>
         <div id="showMoreMostViewBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('mostview')" rel="next" class="block no-underline text-light hover:text-black px-5">
+            <a href="javascript:void(0)" onclick="showMore('mostview')" rel="next" class="block no-underline text-light hover:text-black p-5">
                 Hiển thị thêm
             </a>
         </div>
