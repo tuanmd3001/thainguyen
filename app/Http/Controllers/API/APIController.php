@@ -177,6 +177,16 @@ class APIController extends AppBaseController
 
     private function formatSearchResult($filters, $itemsPaginated)
     {
+        $title = 'Kết quả tìm kiếm';
+        if (isset($filters['type'])){
+            if ($filters['type'] == 'newest'){
+                $title = "Bài viết mới";
+            }
+            elseif ($filters['type'] == 'mostview'){
+                $title = "Xem nhiều nhất";
+            }
+        }
+
         if ($itemsPaginated->count()){
             $itemsTransformed = $itemsPaginated
                 ->getCollection()
@@ -185,6 +195,7 @@ class APIController extends AppBaseController
                         'id' => $item->id,
                         'name' => $item->name,
                         'description' => $item->description,
+                        'comment_count' => $item->comment_count,
                         'thumbnail' => !empty($item->thumbnail) ? url("storage/".$item->thumbnail) : url('assets/images/noimage.jpg'),
                         'created_at' => date( 'd/m/Y', strtotime( $item->created_at )),
                         'doc_url' => route('view_document', $item->slug)
@@ -199,7 +210,7 @@ class APIController extends AppBaseController
                 $itemsPaginated->currentPage(), [
                     'path' => \Request::url(),
                     'query' => $filters,
-                    'title' => isset($filters['type']) && $filters['type'] == 'newest' ? "Bài viết mới" : 'Kết quả tìm kiếm'
+                    'title' => $title
                 ]
             ) extends LengthAwarePaginator {
                 public function toArray()
@@ -219,7 +230,7 @@ class APIController extends AppBaseController
                 1, [
                     'path' => \Request::url(),
                     'query' => $filters,
-                    'title' => isset($filters['type']) && $filters['type'] == 'newest' ? "Bài viết mới" : 'Kết quả tìm kiếm'
+                    'title' => $title
                 ]
             ) extends LengthAwarePaginator {
                 public function toArray()

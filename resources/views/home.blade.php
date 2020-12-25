@@ -2,6 +2,7 @@
 
 @section('css')
     <link rel="stylesheet" href="{{url('assets/css/spinner.css')}}">
+    <link rel="stylesheet" href="{{url('assets/css/ckeditor.css')}}">
 @endsection
 
 @section('content')
@@ -95,14 +96,38 @@
             </div>
         </form>
     </div>
-    <div id="documents-container">
+
+    <div>
+        <div id="searchResult-container">
+        </div>
+        <div id="showMoreSearchBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+            <a href="javascript:void(0)" onclick="showMore('search')" rel="next" class="block no-underline text-light hover:text-black px-5">
+                Hiển thị thêm
+            </a>
+        </div>
     </div>
-    <div id="showMoreBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-        <a href="javascript:void(0)" onclick="showMore()" rel="next" class="block no-underline text-light hover:text-black px-5">
-            Hiển thị thêm
-        </a>
+    <div>
+        <div id="newest-container">
+        </div>
+        <div id="showMoreNewestBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+            <a href="javascript:void(0)" onclick="showMore('newest')" rel="next" class="block no-underline text-light hover:text-black px-5">
+                Hiển thị thêm
+            </a>
+        </div>
+    </div>
+    <div>
+        <div id="mostView-container">
+        </div>
+        <div id="showMoreMostViewBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+            <a href="javascript:void(0)" onclick="showMore('mostview')" rel="next" class="block no-underline text-light hover:text-black px-5">
+                Hiển thị thêm
+            </a>
+        </div>
     </div>
 
+
+    <div id="mostview-documents-container">
+    </div>
     <div id="spinner-container">
         <svg class="spinner" width="40px" height="40px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
             <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
@@ -123,7 +148,9 @@
         });
     </script>
     <script>
-        var next_page_url = null;
+        var search_next_page_url = null;
+        var newest_next_page_url = null;
+        var mostview_next_page_url = null;
         $( document ).ready(function (){
             var urlParams = getUrlParameter()
             var keys = Object.keys(urlParams);
@@ -140,8 +167,12 @@
                 }
                 search();
             } else {
+                $('#showMoreSearchBtn').hide();
                 searchDocument({
                     type: 'newest'
+                }, true);
+                searchDocument({
+                    type: 'mostview'
                 }, true);
             }
         })
@@ -214,7 +245,7 @@
 
                 },
                 success: function (result,status,xhr) {
-                    showResult(result, refresh)
+                    showResult(result, refresh, filters.hasOwnProperty('type') ?  filters.type : 'search')
                 }
             });
         }
@@ -227,51 +258,96 @@
             $('#spinner-container').hide();
         }
 
-        function showResult(data, refresh = false) {
+        function showResult(data, refresh = false, type = 'search') {
+            var docContainer;
+            var showMoreBtn;
+            var nextPageVar;
+            if (type === "newest"){
+                docContainer = $('#newest-container');
+                showMoreBtn = $('#showMoreNewestBtn');
+                nextPageVar = 'newest_next_page_url';
+            }
+            else if (type === "mostview"){
+                docContainer = $('#mostView-container');
+                showMoreBtn = $('#showMoreMostViewBtn');
+                nextPageVar = 'mostview_next_page_url';
+            }
+            else {
+                docContainer = $('#searchResult-container');
+                showMoreBtn = $('#showMoreSearchBtn');
+                nextPageVar = 'search_next_page_url';
+            }
+
             if (refresh){
-                $('#documents-container').empty();
+                docContainer.empty();
             }
             if (data.hasOwnProperty('title') && refresh){
-                $('#documents-container').append('<h1 class="mb-5">' + data.title + '</h1>')
+                docContainer.append('<h1 class="mb-5">' + data.title + '</h1>')
             }
             if (data.hasOwnProperty('data') && data.data.length > 0){
                 for (let i in data.data){
-                    $('#documents-container').append(documentHtml(data.data[i]))
+                    docContainer.append(documentHtml(data.data[i]))
                 }
             }
             else {
-                $('#documents-container').append('<span>Không tìm thấy tài liệu</span>')
+                docContainer.append('<span>Không tìm thấy tài liệu</span>')
             }
-
-            $('#showMoreBtn').hide();
+            showMoreBtn.hide();
             if (data.hasOwnProperty("next_page_url")){
-                next_page_url = data.next_page_url;
+                window[nextPageVar] = data.next_page_url;
                 if (data.next_page_url !== null){
-                    $('#showMoreBtn').show();
+                    showMoreBtn.show();
                 }
             }
         }
         function documentHtml(data){
-            return '<a class="no-underline transition block border border-lighter w-full mb-10 p-5 rounded post-card" href="' + data.doc_url + '">\n' +
-                '<div class="block h-post-card-image bg-cover bg-center bg-no-repeat w-full h-48" style="background-image: url(\''+ data.thumbnail +'\')"></div>\n' +
-                '<div class="flex flex-col justify-between flex-1">' +
-                '    <div>\n' +
-                '        <h3 class="font-sans leading-normal block">' + data.name + '</h3>\n' +
-                // '        <div class="leading-normal mb-6 font-serif leading-loose">' + data.description + '</div>\n' +
-                '    </div>\n' +
-                '    <div class="flex items-center text-sm text-light">\n' +
-                '        <span class="">' + data.created_at + '</span>\n' +
-                '    </div>\n' +
-                '</div>\n' +
-                '</a>'
+            // return '<a class="no-underline transition block border border-lighter w-full mb-10 p-5 rounded post-card" href="' + data.doc_url + '">\n' +
+            //     '<div class="block h-post-card-image bg-cover bg-center bg-no-repeat w-full h-48" style="background-image: url(\''+ data.thumbnail +'\')"></div>\n' +
+            //     '<div class="flex flex-col justify-between flex-1">' +
+            //     '    <div>\n' +
+            //     '        <h3 class="font-sans leading-normal block">' + data.name + '</h3>\n' +
+            //     // '        <div class="leading-normal mb-6 font-serif leading-loose">' + data.description + '</div>\n' +
+            //     '    </div>\n' +
+            //     '    <div class="flex items-center text-sm text-light">\n' +
+            //     '        <span class="">' + data.created_at + '</span>\n' +
+            //     '    </div>\n' +
+            //     '</div>\n' +
+            //     '</a>'
+
+            return `
+            <div class="well">
+                <div class="media">
+                    <a class="pull-left" href="` + data.doc_url + `">
+                        <div class="media-object" style="background-image: url('` + data.thumbnail + `')"></div>
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">` + data.name + `</h4>
+                        <div class="media-description ck-content">` + data.description + `</div>
+                        <ul class="list-inline list-unstyled">
+                            <li><span><i class="glyphicon glyphicon-calendar"></i> ` + data.created_at + ` </span></li>
+                            <li>|</li>
+                            <span><i class="glyphicon glyphicon-comment"></i> ` + data.comment_count + ` nhận xét</span>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            `
         }
 
-        function showMore(){
-            if (next_page_url != null){
+        function showMore(type){
+            var nextPageVar = 'search_next_page_url';
+            if (type === 'newest'){
+                nextPageVar = 'newest_next_page_url';
+            }
+            else if (type === 'mostview'){
+                nextPageVar = 'mostview_next_page_url';
+            }
+
+            if (window[nextPageVar] != null){
                 $.ajax({
                     type: "get",
                     cache: false,
-                    url: next_page_url,
+                    url: window[nextPageVar],
                     beforeSend: function(){
                         showLoading();
                     },
@@ -282,7 +358,7 @@
 
                     },
                     success: function (result,status,xhr) {
-                        showResult(result, false)
+                        showResult(result, false, type)
                     }
                 });
             }

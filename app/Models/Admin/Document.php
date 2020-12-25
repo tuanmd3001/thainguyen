@@ -88,7 +88,7 @@ class Document extends Model
     ];
 
     protected $appends = [
-        'status_label', 'privacy_label'
+        'status_label', 'privacy_label', 'comment_count'
     ];
 
     public function getStatusLabelAttribute(){
@@ -106,6 +106,10 @@ class Document extends Model
         else {
             return "";
         }
+    }
+
+    public function getCommentCountAttribute(){
+        return Comment::where('document_id', $this->id)->count();
     }
 
 }
