@@ -321,7 +321,7 @@
                         <div class="media-object" style="background-image: url('` + data.thumbnail + `')"></div>
                     </a>
                     <div class="media-body">
-                        <h4 class="media-heading">` + data.name + `</h4>
+                        <h4 class="media-heading"><a href="` + data.doc_url + `">` + data.name + `</a></h4>
                         <div class="media-description ck-content">` + data.description + `</div>
                         <ul class="list-inline list-unstyled">
                             <li><span><i class="glyphicon glyphicon-calendar"></i> ` + data.created_at + ` </span></li>
