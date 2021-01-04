@@ -27,7 +27,7 @@ class UpdateAdminUserRequest extends FormRequest
     {
         return [
         'name' => 'required|string|max:191',
-        'username' => "required|string|max:255|alpha_dash|unique:users,username,{$this->user}",
+        'username' => "required|string|max:255|alpha_dash|unique:admin_users,username,{$this->user}",
         ];
     }
 }

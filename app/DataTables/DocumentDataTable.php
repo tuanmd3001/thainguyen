@@ -101,9 +101,8 @@ class DocumentDataTable extends DataTable
         return [
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => 'STT','searchable' => false, 'className' => 'text-center'],
             ['data' => 'name', 'name' => 'name', 'title' => 'Tên'],
-//            ['data' => 'description', 'name' => 'description', 'title' => 'Nội dung'],
-            ['data' => 'privacy_label', 'name' => 'privacy_label', 'title' => 'Cấp độ bảo mật', 'className' => 'text-center'],
-            ['data' => 'status_label', 'name' => 'status_label', 'title' => 'Trạng thái', 'className' => 'text-center'],
+            ['data' => 'privacy_label', 'name' => 'privacy_label', 'title' => 'Cấp độ bảo mật', 'className' => 'text-center','searchable' => false],
+            ['data' => 'status_label', 'name' => 'status_label', 'title' => 'Trạng thái', 'className' => 'text-center','searchable' => false],
         ];
     }
 

@@ -4,7 +4,7 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <!-- Name Field -->
                 <div class="form-group @if($errors->has('username')) has-error @endif">
                     {!! Form::label('username', 'Tên đăng nhập:') !!}
@@ -14,7 +14,19 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-4">
+            @if (!isset($user))
+                <div class="col-md-6">
+                    <!-- Name Field -->
+                    <div class="form-group @if($errors->has('password')) has-error @endif">
+                        {!! Form::label('password', 'Mật khẩu:') !!}
+                        {!! Form::password('password', ['class' => 'form-control','maxlength' => 191,'maxlength' => 191]) !!}
+                        @if($errors->has('password'))
+                            <div class="help-block">{{ $errors->first('password') }}</div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+            <div class="col-md-6">
                 <!-- Name Field -->
                 <div class="form-group @if($errors->has('name')) has-error @endif">
                     {!! Form::label('name', 'Tên:') !!}
@@ -24,7 +36,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <!-- Name Field -->
                 <div class="form-group @if($errors->has('email')) has-error @endif">
                     {!! Form::label('email', 'Email:') !!}

@@ -22,6 +22,12 @@ class LogDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
         $dataTable->filter(function ($query){
+            $req = $this->request()->all();
+            if (isset($req['search']) && isset($req['search']['value']) && $req['search']['value'] != ""){
+                $query->whereIn('causer_id', function ($q) use ($req) {
+                    $q->select('id')->from('users')->where('name', 'LIKE', '%'. $req['search']['value'] . '%');
+                });
+            }
             $query->where('log_name', 'web')->orderBy('id', 'desc');
         }, true);
 
@@ -190,10 +196,10 @@ class LogDataTable extends DataTable
     {
         return [
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => 'STT','searchable' => false, 'className' => 'text-center'],
-            ['data' => 'username', 'name' => 'username', 'title' => 'Người đọc'],
-            ['data' => 'description', 'name' => 'description', 'title' => 'Hành động', 'className' => 'text-center'],
-            ['data' => 'detail', 'name' => 'detail', 'title' => 'Nội dung'],
-            ['data' => 'created_at', 'name' => 'created_at', 'title' => 'Thời gian', 'className' => 'text-center'],
+            ['data' => 'username', 'name' => 'username', 'title' => 'Người đọc','searchable' => false],
+            ['data' => 'description', 'name' => 'description', 'title' => 'Hành động', 'className' => 'text-center','searchable' => false],
+            ['data' => 'detail', 'name' => 'detail', 'title' => 'Nội dung','searchable' => false],
+            ['data' => 'created_at', 'name' => 'created_at', 'title' => 'Thời gian', 'className' => 'text-center','searchable' => false],
         ];
     }
 

@@ -63,7 +63,7 @@ class UserController extends AppBaseController
     public function store(CreateUserRequest $request)
     {
         $input = $request->all();
-        $input['password'] = Hash::make(Constants::DEFAULT_PASSWORD);
+        $input['password'] = Hash::make($input['password']);
         $input['api_token'] = Str::random(60);
 
         $user = $this->userRepository->create($input);

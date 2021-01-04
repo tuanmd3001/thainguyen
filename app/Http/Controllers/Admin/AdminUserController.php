@@ -65,7 +65,7 @@ class AdminUserController extends AppBaseController
     public function store(CreateAdminUserRequest $request)
     {
         $input = $request->all();
-        $input['password'] = Hash::make(Constants::DEFAULT_PASSWORD);
+        $input['password'] = Hash::make($input['password']);
 
         $user = $this->userRepository->create($input);
 

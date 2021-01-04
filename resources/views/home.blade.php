@@ -98,35 +98,43 @@
     </div>
 
     <div>
-        <div id="searchResult-container">
+        <ul class="nav nav-tabs">
+            <li><a data-toggle="tab" href="#searchResult">Kết quả tìm kiếm</a></li>
+            <li class="active"><a data-toggle="tab" href="#newest">Tài liệu mới nhất</a></li>
+            <li><a data-toggle="tab" href="#mostView">Xem nhiều nhất</a></li>
+        </ul>
+        <div class="tab-content" style="padding-top: 20px">
+            <div id="searchResult" class="tab-pane fade">
+                <div class="text-left" style="margin-bottom: 20px">
+                    <select id="search_order" onchange="onOderChange()">
+                        <option value="newest">Mới nhất</option>
+                        <option value="mostview">Xem nhiều nhất</option>
+                    </select>
+                </div>
+                <div id="searchResult-container"></div>
+                <div id="showMoreSearchBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+                    <a href="javascript:void(0)" onclick="showMore('search')" rel="next" class="block no-underline text-light hover:text-black p-5">
+                        Hiển thị thêm
+                    </a>
+                </div>
+            </div>
+            <div id="newest" class="tab-pane fade in active">
+                <div id="newest-container"></div>
+                <div id="showMoreNewestBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+                    <a href="javascript:void(0)" onclick="showMore('newest')" rel="next" class="block no-underline text-light hover:text-black p-5">
+                        Hiển thị thêm
+                    </a>
+                </div>
+            </div>
+            <div id="mostView" class="tab-pane fade">
+                <div id="mostView-container"></div>
+                <div id="showMoreMostViewBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
+                    <a href="javascript:void(0)" onclick="showMore('mostview')" rel="next" class="block no-underline text-light hover:text-black p-5">
+                        Hiển thị thêm
+                    </a>
+                </div>
+            </div>
         </div>
-        <div id="showMoreSearchBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('search')" rel="next" class="block no-underline text-light hover:text-black p-5">
-                Hiển thị thêm
-            </a>
-        </div>
-    </div>
-    <div>
-        <div id="newest-container">
-        </div>
-        <div id="showMoreNewestBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('newest')" rel="next" class="block no-underline text-light hover:text-black p-5">
-                Hiển thị thêm
-            </a>
-        </div>
-    </div>
-    <div>
-        <div id="mostView-container">
-        </div>
-        <div id="showMoreMostViewBtn" class="uppercase flex items-center justify-center flex-1 font-sans">
-            <a href="javascript:void(0)" onclick="showMore('mostview')" rel="next" class="block no-underline text-light hover:text-black p-5">
-                Hiển thị thêm
-            </a>
-        </div>
-    </div>
-
-
-    <div id="mostview-documents-container">
     </div>
     <div id="spinner-container">
         <svg class="spinner" width="40px" height="40px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
@@ -212,6 +220,7 @@
                 else {
                     data[obj.name] = obj.value;
                 }
+                data['order'] = $('#search_order').val();
             });
             if (validateSearch(data)){
                 searchDocument(data, true)
@@ -262,6 +271,7 @@
             var docContainer;
             var showMoreBtn;
             var nextPageVar;
+            var is_search = false;
             if (type === "newest"){
                 docContainer = $('#newest-container');
                 showMoreBtn = $('#showMoreNewestBtn');
@@ -276,14 +286,15 @@
                 docContainer = $('#searchResult-container');
                 showMoreBtn = $('#showMoreSearchBtn');
                 nextPageVar = 'search_next_page_url';
+                is_search = true;
             }
 
             if (refresh){
                 docContainer.empty();
             }
-            if (data.hasOwnProperty('title') && refresh){
-                docContainer.append('<h1 class="mb-5">' + data.title + '</h1>')
-            }
+            // if (data.hasOwnProperty('title') && refresh){
+            //     docContainer.append('<h1 class="mb-5">' + data.title + '</h1>')
+            // }
             if (data.hasOwnProperty('data') && data.data.length > 0){
                 for (let i in data.data){
                     docContainer.append(documentHtml(data.data[i]))
@@ -299,21 +310,11 @@
                     showMoreBtn.show();
                 }
             }
+            if (is_search){
+                $('[href="#searchResult"]').tab('show');
+            }
         }
         function documentHtml(data){
-            // return '<a class="no-underline transition block border border-lighter w-full mb-10 p-5 rounded post-card" href="' + data.doc_url + '">\n' +
-            //     '<div class="block h-post-card-image bg-cover bg-center bg-no-repeat w-full h-48" style="background-image: url(\''+ data.thumbnail +'\')"></div>\n' +
-            //     '<div class="flex flex-col justify-between flex-1">' +
-            //     '    <div>\n' +
-            //     '        <h3 class="font-sans leading-normal block">' + data.name + '</h3>\n' +
-            //     // '        <div class="leading-normal mb-6 font-serif leading-loose">' + data.description + '</div>\n' +
-            //     '    </div>\n' +
-            //     '    <div class="flex items-center text-sm text-light">\n' +
-            //     '        <span class="">' + data.created_at + '</span>\n' +
-            //     '    </div>\n' +
-            //     '</div>\n' +
-            //     '</a>'
-
             return `
             <div class="well">
                 <div class="media">
@@ -332,6 +333,10 @@
                 </div>
             </div>
             `
+        }
+
+        function onOderChange(){
+            search();
         }
 
         function showMore(type){

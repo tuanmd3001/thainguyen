@@ -104,7 +104,8 @@ class APIController extends AppBaseController
                     ])
                     ->log('search');
             }
-            $itemsPaginated = Document::where('draft', Document::SAVE_TYPE_PUBLIC)
+            $itemsPaginated = Document::select("*", DB::raw('(SELECT COUNT(1) from activity_log WHERE log_name = "web" AND description = "view" AND subject_id = documents.id) as view'))
+                ->where('draft', Document::SAVE_TYPE_PUBLIC)
                 ->where('status', Document::STATUS_EXPLOIT);
             if (isset($filters['txtSearch']) && trim($filters['txtSearch']) != ""){
                 $where = [];
@@ -139,7 +140,13 @@ class APIController extends AppBaseController
             if (isset($filters['tags']) && count($filters['tags'])){
                 $itemsPaginated = $itemsPaginated->withAnyTagsOfAnyType($filters['tags']);
             }
-            $itemsPaginated = $itemsPaginated->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(self::PER_PAGE);
+            if (isset($filters['order']) && $filters['order'] == 'mostview'){
+                $itemsPaginated = $itemsPaginated->orderBy('view', 'desc')->orderBy('id', 'desc');
+            }
+            else {
+                $itemsPaginated = $itemsPaginated->orderBy('created_at', 'desc')->orderBy('id', 'desc');
+            }
+            $itemsPaginated = $itemsPaginated->paginate(self::PER_PAGE);
         }
 
         if (isset($filters['_'])){
@@ -159,19 +166,11 @@ class APIController extends AppBaseController
     }
 
     private function getMostView(){
-        $query = sprintf("SELECT DISTINCT(subject_id) as document_id FROM activity_log where log_name = 'web' and description = 'view' GROUP BY document_id ORDER BY count(1) DESC, document_id DESC;");
-        return Document::where('draft', Document::SAVE_TYPE_PUBLIC)
+        return Document::select("*", DB::raw('(SELECT COUNT(1) from activity_log WHERE log_name = "web" AND description = "view" AND subject_id = documents.id) as view'))
+            ->where('draft', Document::SAVE_TYPE_PUBLIC)
             ->where('status', Document::STATUS_EXPLOIT)
-            ->whereIn('id', function($query){
-                $query->select(DB::raw('DISTINCT subject_id as document_id'))
-                    ->from('activity_log')
-                    ->where('log_name', 'web')
-                    ->where('description', 'view')
-                    ->groupBy('document_id')
-                    ->orderBy(DB::raw('count(1)'), 'desc')
-                    ->orderBy('document_id', 'desc');
-            })
-            ->orderBy('created_at', 'desc')->orderBy('id', 'desc')
+            ->orderBy('view', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(self::PER_PAGE);
     }
 
@@ -180,7 +179,7 @@ class APIController extends AppBaseController
         $title = 'Kết quả tìm kiếm';
         if (isset($filters['type'])){
             if ($filters['type'] == 'newest'){
-                $title = "Bài viết mới";
+                $title = "Tài liệu mới";
             }
             elseif ($filters['type'] == 'mostview'){
                 $title = "Xem nhiều nhất";

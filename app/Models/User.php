@@ -65,7 +65,7 @@ class User extends Authenticatable
         'username' => ['required', 'string', 'max:191', 'alpha_dash', 'unique:users,username'],
 //        'email' => 'required|string|max:191',
 //        'email_verified_at' => 'nullable',
-//        'password' => 'required|string|max:191',
+        'password' => 'required|string|max:191',
 //        'remember_token' => 'nullable|string|max:100',
 //        'created_at' => 'nullable',
 //        'updated_at' => 'nullable'
