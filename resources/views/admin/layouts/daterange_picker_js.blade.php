@@ -7,25 +7,25 @@
             {{ 'var ' . $el_id . "_endDate;"}}
             var that = $('#{{$el_id}}');
             var autoUpdateInput = false;
-            if("{{ session('filter_daterange_start') }}") {
-                var startDate = new Date("{{ session('filter_daterange_start') }}");
-                autoUpdateInput = true;
-            }
-            else {
-                var startDate = new Date();
-                startDate.setDate(startDate.getDate() - 3);
-            }
-            if("{{ session('filter_daterange_end') }}") {
-                var endDate = new Date("{{ session('filter_daterange_end') }}");
-                autoUpdateInput = true;
-            }
-            else {
-                var endDate = new Date();
-            }
+            {{--if("{{ session('filter_daterange_start') }}") {--}}
+            {{--    var startDate = new Date("{{ session('filter_daterange_start') }}");--}}
+            {{--    autoUpdateInput = true;--}}
+            {{--}--}}
+            {{--else {--}}
+            {{--    var startDate = new Date();--}}
+            {{--    startDate.setDate(startDate.getDate() - 3);--}}
+            {{--}--}}
+            {{--if("{{ session('filter_daterange_end') }}") {--}}
+            {{--    var endDate = new Date("{{ session('filter_daterange_end') }}");--}}
+            {{--    autoUpdateInput = true;--}}
+            {{--}--}}
+            {{--else {--}}
+            {{--    var endDate = new Date();--}}
+            {{--}--}}
             $(that).daterangepicker({
                     "autoUpdateInput": autoUpdateInput,
-                    "startDate": startDate,
-                    "endDate": endDate,
+                    // "startDate": startDate,
+                    // "endDate": endDate,
                     "locale": {
                         "format": "DD/MM/YYYY",
                         "separator": " - ",
